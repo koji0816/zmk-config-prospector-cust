@@ -1,21 +1,41 @@
 #include <zephyr/dt-bindings/display/panel.h>
 
-/*
- * 既存の四角いディスプレイ（st7789v）のノードをそのまま使い回し、
- * 中身を丸型ディスプレイ（GC9A01）の仕様にすり替える作戦です。
- * これにより重複エラーやラベル参照エラーが100%発生しなくなります。
- */
-&st7789v {
-    status = "okay";
-    compatible = "galaxycore,gc9x01x";
-    cmd-data-gpios = <&xiao_d 3 GPIO_ACTIVE_HIGH>;
-    pixel-format = <PANEL_PIXEL_FORMAT_RGB_565>;
-    width = <240>;
-    height = <240>;
-    display-inversion;
+/ {
+    chosen {
+        /* 画面の出力先を、新設する丸型ディスプレイに向ける */
+        zephyr,display = &gc9a01;
+    };
 };
 
+/* 既存の四角ディスプレイは、中身をいじらずに電源だけ切る（エラー回避） */
+&st7789v {
+    status = "disabled";
+};
+
+/* * SPIバスの管理枠を2つに増やします。
+ * [0] = 元のディスプレイ用 (ダミーとして残す)
+ * [1] = 新しい丸型ディスプレイ用 (CSピン = D1)
+ */
 &xiao_spi {
-    /* XIAO Round DisplayのCSピン(D1)で上書き */
-    cs-gpios = <&xiao_d 1 GPIO_ACTIVE_LOW>;
+    status = "okay";
+    cs-gpios = <&xiao_d 9 GPIO_ACTIVE_LOW>, <&xiao_d 1 GPIO_ACTIVE_LOW>;
+};
+
+/* ディスプレイの通信バス（MIPI-DBI）の設定を上書き */
+&{/mipi_dbi} {
+    /* XIAO Round Display の DCピン(D3) に変更 */
+    dc-gpios = <&xiao_d 3 GPIO_ACTIVE_HIGH>;
+    /* D3ピンが元のリセットピン設定と被るのを防ぐため、リセット設定を消去 */
+    /delete-property/ reset-gpios;
+
+    /* アドレス「1」に、丸型ディスプレイを新規登録する */
+    gc9a01: gc9x01x@1 {
+        status = "okay";
+        compatible = "galaxycore,gc9x01x";
+        reg = <1>;  /* cs-gpios の [1] 番目を使うという意味 */
+        mipi-max-frequency = <20000000>;
+        pixel-format = <PANEL_PIXEL_FORMAT_RGB_565>;
+        width = <240>;
+        height = <240>;
+    };
 };
