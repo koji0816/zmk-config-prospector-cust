@@ -7,17 +7,18 @@
     };
 };
 
+/* 既存の四角いディスプレイ（ST7789V）をラベルで直接指定して無効化 */
+&st7789v {
+    status = "disabled";
+};
+
+/* SPIバスの設定 */
 &xiao_spi {
     status = "okay";
     /* XIAO Round DisplayのCSピンはD1 */
     cs-gpios = <&xiao_d 1 GPIO_ACTIVE_LOW>;
 
-    /* 元の四角いディスプレイ（ST7789V）を無効化して競合を防ぐ */
-    st7789v: st7789v@0 {
-        status = "disabled";
-    };
-
-    /* 丸型ディスプレイ（GC9A01）を定義 */
+    /* 丸型ディスプレイ（GC9A01）を新しく定義 */
     gc9a01: gc9a01@0 {
         compatible = "galaxycore,gc9a01";
         reg = <0>;
