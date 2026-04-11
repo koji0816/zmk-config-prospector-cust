@@ -1,0 +1,30 @@
+/* XIAO Round Display (GC9A01) 用のオーバーレイ設定 */
+
+/ {
+    chosen {
+        /* デフォルトのディスプレイを GC9A01 に変更 */
+        zephyr,display = &gc9a01;
+    };
+};
+
+&xiao_spi {
+    status = "okay";
+    /* XIAO Round DisplayのCSピンはD1 */
+    cs-gpios = <&xiao_d 1 GPIO_ACTIVE_LOW>;
+
+    /* 元の四角いディスプレイ（ST7789V）を無効化して競合を防ぐ */
+    st7789v: st7789v@0 {
+        status = "disabled";
+    };
+
+    /* 丸型ディスプレイ（GC9A01）を定義 */
+    gc9a01: gc9a01@0 {
+        compatible = "galaxycore,gc9a01";
+        reg = <0>;
+        spi-max-frequency = <20000000>;
+        /* XIAO Round DisplayのDCピンはD3 */
+        cmd-data-gpios = <&xiao_d 3 GPIO_ACTIVE_HIGH>;
+        width = <240>;
+        height = <240>;
+    };
+};
