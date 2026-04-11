@@ -1,35 +1,21 @@
 #include <zephyr/dt-bindings/display/panel.h>
 
-/ {
-    chosen {
-        /* デフォルトのディスプレイを GC9A01 に変更 */
-        zephyr,display = &gc9a01;
-    };
-
-    mipi_dbi {
-        /* 元の四角いディスプレイ（ST7789V）のノードを完全に削除して競合を防ぐ */
-        /delete-node/ st7789v@0;
-
-        /* XIAO Round DisplayのDCピン（D3）を設定 */
-        dc-gpios = <&xiao_d 3 GPIO_ACTIVE_HIGH>;
-
-        /* 丸型ディスプレイ（GC9A01）を新しく定義 */
-        gc9a01: gc9x01x@0 {
-            status = "okay";
-            /* Zephyr 4.x の新しいドライバ名 */
-            compatible = "galaxycore,gc9x01x";
-            reg = <0>;
-            mipi-max-frequency = <100000000>;
-            pixel-format = <PANEL_PIXEL_FORMAT_RGB_565>;
-            width = <240>;
-            height = <240>;
-            display-inversion;
-        };
-    };
+/*
+ * 既存の四角いディスプレイ（st7789v）のノードをそのまま使い回し、
+ * 中身を丸型ディスプレイ（GC9A01）の仕様にすり替える作戦です。
+ * これにより重複エラーやラベル参照エラーが100%発生しなくなります。
+ */
+&st7789v {
+    status = "okay";
+    compatible = "galaxycore,gc9x01x";
+    cmd-data-gpios = <&xiao_d 3 GPIO_ACTIVE_HIGH>;
+    pixel-format = <PANEL_PIXEL_FORMAT_RGB_565>;
+    width = <240>;
+    height = <240>;
+    display-inversion;
 };
 
 &xiao_spi {
-    status = "okay";
-    /* XIAO Round DisplayのCSピン（D1）を設定 */
+    /* XIAO Round DisplayのCSピン(D1)で上書き */
     cs-gpios = <&xiao_d 1 GPIO_ACTIVE_LOW>;
 };
