@@ -63,5 +63,7 @@
         pixel-format = <PANEL_PIXEL_FORMAT_RGB_565>;
         width = <240>;
         height = <240>;
+        /* Hardware rotation: Type-C port at the bottom (90 degrees CW) */
+        orientation = "90";
     };
 };
