@@ -661,8 +661,8 @@ lv_obj_t *zmk_display_status_screen(void) {
         const struct device *display_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_display));
         int hw_err = -ENOTSUP;
         if (device_is_ready(display_dev)) {
-            hw_err = display_set_orientation(display_dev, DISPLAY_ORIENTATION_ROTATED_270);
-            LOG_INF("Zephyr hardware rotation to 270 returned %d", hw_err);
+            hw_err = display_set_orientation(display_dev, DISPLAY_ORIENTATION_ROTATED_90);
+            LOG_INF("Zephyr hardware rotation to 90 returned %d", hw_err);
         }
 
         /* 2. Configure LVGL software rotation as fallback if HW rotation failed */
@@ -670,7 +670,7 @@ lv_obj_t *zmk_display_status_screen(void) {
 #if LVGL_VERSION_MAJOR >= 9
             lv_display_t *disp = lv_display_get_default();
             if (disp) {
-                lv_display_set_rotation(disp, LV_DISPLAY_ROTATION_270);
+                lv_display_set_rotation(disp, LV_DISPLAY_ROTATION_90);
                 LOG_INF("LVGL 9 software rotation applied");
             }
 #else
@@ -679,7 +679,7 @@ lv_obj_t *zmk_display_status_screen(void) {
                 if (disp->driver) {
                     disp->driver->sw_rotate = 1;  /* Force LVGL internal sw rotation buffer */
                 }
-                lv_disp_set_rotation(disp, LV_DISP_ROT_270);
+                lv_disp_set_rotation(disp, LV_DISP_ROT_90);
                 LOG_INF("LVGL 8 software rotation applied (sw_rotate forced)");
             }
 #endif
