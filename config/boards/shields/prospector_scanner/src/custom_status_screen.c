@@ -1873,21 +1873,24 @@ static void create_main_screen_widgets(void) {
 
     /* Recreate all main screen widgets using screen_obj */
     device_name_label = lv_label_create(screen_obj);
-    lv_obj_set_style_text_font(device_name_label, &lv_font_unscii_16, 0);
+    lv_obj_set_style_text_font(device_name_label, &lv_font_montserrat_16, 0);
     lv_obj_set_style_text_color(device_name_label, lv_color_white(), 0);
     lv_label_set_text(device_name_label, "Scanning...");
-    lv_obj_align(device_name_label, LV_ALIGN_TOP_MID, 0, 25);
+    lv_label_set_long_mode(device_name_label, LV_LABEL_LONG_CLIP);
+    lv_obj_set_width(device_name_label, 140);
+    lv_obj_set_style_text_align(device_name_label, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_align(device_name_label, LV_ALIGN_TOP_MID, 0, 48);
 
     scanner_bat_icon = lv_label_create(screen_obj);
     lv_obj_set_style_text_font(scanner_bat_icon, &lv_font_montserrat_12, 0);
-    lv_obj_set_pos(scanner_bat_icon, 216, 4);  /* 4px right */
-    lv_label_set_text(scanner_bat_icon, LV_SYMBOL_BATTERY_3);  /* Initial: 3/4 battery */
+    lv_obj_set_pos(scanner_bat_icon, 163, 30);
+    lv_label_set_text(scanner_bat_icon, LV_SYMBOL_BATTERY_3);
     lv_obj_set_style_text_color(scanner_bat_icon, lv_color_hex(0x7FFF00), 0);
 
     scanner_bat_pct = lv_label_create(screen_obj);
     lv_obj_set_style_text_font(scanner_bat_pct, &lv_font_unscii_8, 0);
-    lv_obj_set_pos(scanner_bat_pct, 238, 7);  /* 2px up */
-    lv_label_set_text(scanner_bat_pct, "?");  /* Unknown until battery read */
+    lv_obj_set_pos(scanner_bat_pct, 183, 33);
+    lv_label_set_text(scanner_bat_pct, "?");
     lv_obj_set_style_text_color(scanner_bat_pct, lv_color_hex(0x7FFF00), 0);
 
     /* Hide battery widget if disabled */
@@ -1900,59 +1903,59 @@ static void create_main_screen_widgets(void) {
     lv_obj_set_style_text_font(wpm_title_label, &lv_font_unscii_8, 0);
     lv_obj_set_style_text_color(wpm_title_label, lv_color_make(0xA0, 0xA0, 0xA0), 0);
     lv_label_set_text(wpm_title_label, "WPM");
-    lv_obj_set_pos(wpm_title_label, 20, 53);  /* 3px down */
+    lv_obj_set_pos(wpm_title_label, 55, 30);
 
     wpm_value_label = lv_label_create(screen_obj);
     lv_obj_set_style_text_font(wpm_value_label, &lv_font_montserrat_16, 0);
     lv_obj_set_style_text_color(wpm_value_label, lv_color_white(), 0);
-    lv_obj_set_width(wpm_value_label, 48);  /* Fixed width for centering */
+    lv_obj_set_width(wpm_value_label, 44);
     lv_obj_set_style_text_align(wpm_value_label, LV_TEXT_ALIGN_CENTER, 0);
     lv_label_set_text(wpm_value_label, "0");
-    lv_obj_set_pos(wpm_value_label, 8, 66);  /* 3px down */
+    lv_obj_set_pos(wpm_value_label, 50, 43);
 
     transport_label = lv_label_create(screen_obj);
     lv_obj_set_style_text_font(transport_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(transport_label, lv_color_white(), 0);
     lv_obj_set_style_text_align(transport_label, LV_TEXT_ALIGN_RIGHT, 0);
     lv_label_set_recolor(transport_label, true);
-    lv_obj_align(transport_label, LV_ALIGN_TOP_RIGHT, -10, 53);
-    lv_label_set_text(transport_label, "#ffffff BLE#\n#ffffff 0#");  /* Exclusive display */
+    lv_obj_align(transport_label, LV_ALIGN_TOP_RIGHT, -30, 68);
+    lv_label_set_text(transport_label, "#ffffff BLE#\n#ffffff 0#");
 
     ble_profile_label = lv_label_create(screen_obj);
     lv_obj_set_style_text_font(ble_profile_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(ble_profile_label, lv_color_white(), 0);
-    lv_label_set_text(ble_profile_label, "");  /* Hidden - integrated */
-    lv_obj_align(ble_profile_label, LV_ALIGN_TOP_RIGHT, -8, 78);
+    lv_label_set_text(ble_profile_label, "");
+    lv_obj_align(ble_profile_label, LV_ALIGN_TOP_RIGHT, -30, 92);
 
     layer_title_label = lv_label_create(screen_obj);
     lv_obj_set_style_text_font(layer_title_label, &lv_font_montserrat_16, 0);
     lv_obj_set_style_text_color(layer_title_label, lv_color_make(160, 160, 160), 0);
     lv_label_set_text(layer_title_label, "Layer");
-    lv_obj_align(layer_title_label, LV_ALIGN_TOP_MID, 0, 82);  /* 3px up */
+    lv_obj_align(layer_title_label, LV_ALIGN_TOP_MID, 0, 100);
 
     /* Create layer display - slide mode OR fixed mode (list/over-max) */
     if (ds_layer_slide_mode) {
-        /* Slide mode: create 7-slot dial display */
-        create_layer_slide_widgets(screen_obj, 105);
-        layer_mode_over_max = false;  /* Not used in slide mode */
+        create_layer_slide_widgets(screen_obj, 118);
+        layer_mode_over_max = false;
     } else if (active_layer >= ds_max_layers) {
         layer_mode_over_max = true;
-        create_over_max_widget(screen_obj, active_layer, 105);
+        create_over_max_widget(screen_obj, active_layer, 118);
     } else {
         layer_mode_over_max = false;
-        create_layer_list_widgets(screen_obj, 105);
+        create_layer_list_widgets(screen_obj, 118);
     }
 
     modifier_label = lv_label_create(screen_obj);
     lv_obj_set_style_text_font(modifier_label, &NerdFonts_Regular_40, 0);
     lv_obj_set_style_text_color(modifier_label, lv_color_white(), 0);
-    lv_obj_set_style_text_letter_space(modifier_label, 10, 0);  /* Space between icons */
+    lv_obj_set_style_text_letter_space(modifier_label, 6, 0);
     lv_label_set_text(modifier_label, "");
-    lv_obj_align(modifier_label, LV_ALIGN_TOP_MID, 0, 145);
+    lv_obj_align(modifier_label, LV_ALIGN_TOP_MID, 0, 155);
 
     /* === Keyboard battery widgets (4 slots, dynamic layout) === */
-    static const int16_t kb_x_offsets_2_r[] = {-70, 70, 0, 0};
-    int16_t bar_width_r = 110;  /* Default to 2-battery layout */
+    /* Circle at y=190: width ~193px. Keep bars compact. */
+    static const int16_t kb_x_offsets_2_r[] = {-45, 45, 0, 0};
+    int16_t bar_width_r = 75;
 
     for (int i = 0; i < MAX_KB_BATTERIES; i++) {
         int16_t x_offset_r = (i < 2) ? kb_x_offsets_2_r[i] : 0;
@@ -1960,7 +1963,7 @@ static void create_main_screen_widgets(void) {
         /* Connected state bar */
         kb_bat_bar[i] = lv_bar_create(screen_obj);
         lv_obj_set_size(kb_bat_bar[i], bar_width_r, 4);
-        lv_obj_align(kb_bat_bar[i], LV_ALIGN_BOTTOM_MID, x_offset_r, -33);
+        lv_obj_align(kb_bat_bar[i], LV_ALIGN_BOTTOM_MID, x_offset_r, -42);
         lv_bar_set_range(kb_bat_bar[i], 0, 100);
         lv_bar_set_value(kb_bat_bar[i], 0, LV_ANIM_OFF);
         lv_obj_set_style_bg_color(kb_bat_bar[i], lv_color_hex(0x202020), LV_PART_MAIN);
@@ -1978,7 +1981,7 @@ static void create_main_screen_widgets(void) {
         kb_bat_pct[i] = lv_label_create(screen_obj);
         lv_obj_set_style_text_font(kb_bat_pct[i], &lv_font_montserrat_12, 0);
         lv_obj_set_style_text_color(kb_bat_pct[i], lv_color_white(), 0);
-        lv_obj_align(kb_bat_pct[i], LV_ALIGN_BOTTOM_MID, x_offset_r, -42);
+        lv_obj_align(kb_bat_pct[i], LV_ALIGN_BOTTOM_MID, x_offset_r, -52);
         lv_label_set_text(kb_bat_pct[i], "0");
         lv_obj_set_style_opa(kb_bat_pct[i], 0, 0);
 
@@ -1986,7 +1989,7 @@ static void create_main_screen_widgets(void) {
         kb_bat_name[i] = lv_label_create(screen_obj);
         lv_obj_set_style_text_font(kb_bat_name[i], &lv_font_montserrat_12, 0);
         lv_obj_set_style_text_color(kb_bat_name[i], lv_color_hex(0x808080), 0);
-        lv_obj_align(kb_bat_name[i], LV_ALIGN_BOTTOM_MID, x_offset_r - bar_width_r/2, -42);
+        lv_obj_align(kb_bat_name[i], LV_ALIGN_BOTTOM_MID, x_offset_r - bar_width_r/2, -52);
         lv_obj_set_style_text_align(kb_bat_name[i], LV_TEXT_ALIGN_RIGHT, 0);
         lv_label_set_text(kb_bat_name[i], "");
         lv_obj_set_style_opa(kb_bat_name[i], 0, 0);
@@ -1994,7 +1997,7 @@ static void create_main_screen_widgets(void) {
         /* Disconnected state bar */
         kb_bat_nc_bar[i] = lv_obj_create(screen_obj);
         lv_obj_set_size(kb_bat_nc_bar[i], bar_width_r, 4);
-        lv_obj_align(kb_bat_nc_bar[i], LV_ALIGN_BOTTOM_MID, x_offset_r, -33);
+        lv_obj_align(kb_bat_nc_bar[i], LV_ALIGN_BOTTOM_MID, x_offset_r, -42);
         lv_obj_set_style_bg_color(kb_bat_nc_bar[i], lv_color_hex(0x9e2121), LV_PART_MAIN);
         lv_obj_set_style_bg_opa(kb_bat_nc_bar[i], 255, LV_PART_MAIN);
         lv_obj_set_style_radius(kb_bat_nc_bar[i], 1, LV_PART_MAIN);
@@ -2006,7 +2009,7 @@ static void create_main_screen_widgets(void) {
         kb_bat_nc_label[i] = lv_label_create(screen_obj);
         lv_obj_set_style_text_font(kb_bat_nc_label[i], &lv_font_montserrat_12, 0);
         lv_obj_set_style_text_color(kb_bat_nc_label[i], lv_color_hex(0xe63030), 0);
-        lv_obj_align(kb_bat_nc_label[i], LV_ALIGN_BOTTOM_MID, x_offset_r, -42);
+        lv_obj_align(kb_bat_nc_label[i], LV_ALIGN_BOTTOM_MID, x_offset_r, -52);
         lv_label_set_text(kb_bat_nc_label[i], LV_SYMBOL_CLOSE);
         lv_obj_set_style_opa(kb_bat_nc_label[i], (i < 2) ? 255 : 0, 0);
     }
@@ -2015,17 +2018,17 @@ static void create_main_screen_widgets(void) {
     lv_obj_set_style_text_font(channel_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(channel_label, lv_color_make(0x80, 0x80, 0x80), 0);
     lv_label_set_text(channel_label, "Ch:0");
-    lv_obj_set_pos(channel_label, 62, 219);  /* 5px down, 5px left */
+    lv_obj_set_pos(channel_label, 35, 193);
 
     rx_title_label = lv_label_create(screen_obj);
     lv_obj_set_style_text_font(rx_title_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(rx_title_label, lv_color_make(0x80, 0x80, 0x80), 0);
     lv_label_set_text(rx_title_label, "RX:");
-    lv_obj_set_pos(rx_title_label, 102, 219);  /* 5px down, 5px left */
+    lv_obj_set_pos(rx_title_label, 82, 193);
 
     rssi_bar = lv_bar_create(screen_obj);
-    lv_obj_set_size(rssi_bar, 30, 8);
-    lv_obj_set_pos(rssi_bar, 130, 223);  /* RX indicator position */
+    lv_obj_set_size(rssi_bar, 28, 8);
+    lv_obj_set_pos(rssi_bar, 111, 197);
     lv_bar_set_range(rssi_bar, 0, 5);
     lv_bar_set_value(rssi_bar, 0, LV_ANIM_OFF);
     lv_obj_set_style_bg_color(rssi_bar, lv_color_hex(0x202020), LV_PART_MAIN);
@@ -2039,13 +2042,14 @@ static void create_main_screen_widgets(void) {
     lv_obj_set_style_text_font(rssi_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(rssi_label, lv_color_make(0xA0, 0xA0, 0xA0), 0);
     lv_label_set_text(rssi_label, "--dBm");
-    lv_obj_set_pos(rssi_label, 167, 219);  /* 5px down, 5px left */
+    lv_obj_set_pos(rssi_label, 143, 193);
 
     rate_label = lv_label_create(screen_obj);
     lv_obj_set_style_text_font(rate_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(rate_label, lv_color_make(0xA0, 0xA0, 0xA0), 0);
     lv_label_set_text(rate_label, "-.--Hz");
-    lv_obj_set_pos(rate_label, 222, 219);  /* 5px down, 5px left */
+    lv_obj_set_pos(rate_label, 178, 193);
+
 
     LOG_INF("Main screen widgets created, restoring cached values...");
 
