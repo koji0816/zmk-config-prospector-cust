@@ -2436,7 +2436,7 @@ static void create_display_settings_widgets(void) {
 
     /* ===== Brightness Section ===== */
     ds_brightness_label = lv_label_create(screen_obj);
-    lv_obj_set_style_text_font(ds_brightness_label, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_font(ds_brightness_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(ds_brightness_label, lv_color_white(), 0);
     lv_label_set_text(ds_brightness_label, "Brightness");
     lv_obj_set_pos(ds_brightness_label, 28, y_pos);
@@ -2510,7 +2510,7 @@ static void create_display_settings_widgets(void) {
 
     /* Brightness value label at x=185, right of slider */
     ds_brightness_value = lv_label_create(screen_obj);
-    lv_obj_set_style_text_font(ds_brightness_value, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_font(ds_brightness_value, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(ds_brightness_value, lv_color_hex(0x007AFF), 0);
     char buf[8];
     snprintf(buf, sizeof(buf), "%d%%", ds_manual_brightness);
@@ -2521,7 +2521,7 @@ static void create_display_settings_widgets(void) {
 
     /* ===== Battery Section ===== */
     ds_battery_label = lv_label_create(screen_obj);
-    lv_obj_set_style_text_font(ds_battery_label, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_font(ds_battery_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(ds_battery_label, lv_color_white(), 0);
     lv_label_set_text(ds_battery_label, "Bat. Widget");
     lv_obj_set_pos(ds_battery_label, 28, y_pos);
@@ -2552,7 +2552,7 @@ static void create_display_settings_widgets(void) {
 
     /* ===== Max Layers Section ===== */
     ds_layer_label = lv_label_create(screen_obj);
-    lv_obj_set_style_text_font(ds_layer_label, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_font(ds_layer_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(ds_layer_label, lv_color_white(), 0);
     lv_label_set_text(ds_layer_label, "Max Layers");
     lv_obj_set_pos(ds_layer_label, 28, y_pos);
@@ -2614,7 +2614,7 @@ static void create_display_settings_widgets(void) {
 
     /* Layer value label at x=185, same column as brightness value */
     ds_layer_value = lv_label_create(screen_obj);
-    lv_obj_set_style_text_font(ds_layer_value, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_font(ds_layer_value, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(ds_layer_value, lv_color_hex(0x007AFF), 0);
     snprintf(buf, sizeof(buf), "%d", ds_max_layers);
     lv_label_set_text(ds_layer_value, buf);
