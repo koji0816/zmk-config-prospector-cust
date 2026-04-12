@@ -13,8 +13,8 @@
     status = "okay";
     /delete-property/ irq-gpios;
     /delete-property/ rst-gpios;
-    irq-gpios = <&xiao_d 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-    rst-gpios = <&xiao_d 10 GPIO_ACTIVE_LOW>;
+    irq-gpios = <&xiao_d 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+    rst-gpios = <&xiao_d 0 GPIO_ACTIVE_LOW>;
 };
 
 /* XIAO Round Display のタッチセンサー (CHSC6416) を I2C0 に追加 */

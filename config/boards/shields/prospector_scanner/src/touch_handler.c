@@ -23,7 +23,7 @@ __attribute__((weak)) bool display_settings_is_interacting(void) {
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
-#define TOUCH_NODE DT_NODELABEL(touch_sensor)
+#define TOUCH_NODE DT_NODELABEL(chsc6x_touch)
 
 #if !DT_NODE_EXISTS(TOUCH_NODE)
 #error "Touch sensor device tree node not found"
