@@ -209,7 +209,7 @@ static void touch_input_callback(struct input_event *evt, void *user_data) {
                     //   Physical DOWN (raw_dy>0) → Display/Swipe RIGHT
                     //   Physical LEFT  (raw_dx<0) → Display/Swipe DOWN
                     //   Physical RIGHT (raw_dx>0) → Display/Swipe UP
-                    int16_t dx = raw_dy;   // physical Y movement → LVGL X axis swipe
+                    int16_t dx = -raw_dy;  // physical Y movement (inverted) → LVGL X axis swipe
                     int16_t dy = -raw_dx;  // physical X movement (inverted) → LVGL Y axis swipe
 
                     int16_t abs_dx = (dx < 0) ? -dx : dx;
@@ -269,9 +269,9 @@ INPUT_CALLBACK_DEFINE(DEVICE_DT_GET(TOUCH_NODE), touch_input_callback, NULL);
 static void lvgl_input_read(lv_indev_t *indev, lv_indev_data_t *data) {
     ARG_UNUSED(indev);
 
-    // Apply 90° CW rotation transform to match hardware display orientation
+    // Apply 90° CW rotation transform + X-axis inversion
     // raw_x/raw_y are in touch panel native space (before display rotation)
-    int32_t logical_x = (int32_t)current_y;           // raw_y → LVGL x
+    int32_t logical_x = 239 - (int32_t)current_y;     // 239 - raw_y → LVGL x (inverted)
     int32_t logical_y = 239 - (int32_t)current_x;     // 239 - raw_x → LVGL y
 
     // Clamp to 240x240 valid range
