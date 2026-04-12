@@ -653,6 +653,17 @@ lv_obj_t *zmk_display_status_screen(void) {
     /* Load persisted display settings from NVS flash */
     load_display_settings();
 
+    /* Set display rotation so Type-C is at the bottom (270 degree rotation from native 90-degree-right) */
+#if LVGL_VERSION_MAJOR >= 9
+    if (lv_display_get_default()) {
+        lv_display_set_rotation(lv_display_get_default(), LV_DISPLAY_ROTATION_270);
+    }
+#else
+    if (lv_disp_get_default()) {
+        lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_270);
+    }
+#endif
+
     /* Create main screen */
     LOG_INF("[INIT] Creating main_screen...");
     lv_obj_t *screen = lv_obj_create(NULL);
@@ -661,28 +672,28 @@ lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_clear_flag(screen, LV_OBJ_FLAG_SCROLLABLE);
     LOG_INF("[INIT] main_screen created");
 
-    /* ===== 1. Device Name (TOP_MID, y=25) ===== */
+    /* ===== 1. Device Name (TOP_MID, y=20) ===== */
     LOG_INF("[INIT] Creating device name...");
     device_name_label = lv_label_create(screen);
     lv_obj_set_style_text_font(device_name_label, &lv_font_unscii_16, 0);
     lv_obj_set_style_text_color(device_name_label, lv_color_white(), 0);
     lv_label_set_text(device_name_label, "Scanning...");
-    lv_obj_align(device_name_label, LV_ALIGN_TOP_MID, 0, 25);
+    lv_obj_align(device_name_label, LV_ALIGN_TOP_MID, 0, 20);
     LOG_INF("[INIT] device name created");
 
-    /* ===== 2. Scanner Battery (TOP_RIGHT area) ===== */
-    /* Shows scanner device's own battery level */
+    /* ===== 2. Scanner Battery (TOP_RIGHT curve) ===== */
+    /* Positioned at x=175, y=30 to fit inside circle radius */
     LOG_INF("[INIT] Creating scanner battery...");
     scanner_bat_icon = lv_label_create(screen);
     lv_obj_set_style_text_font(scanner_bat_icon, &lv_font_montserrat_12, 0);
-    lv_obj_set_pos(scanner_bat_icon, 216, 4);  /* 4px right */
-    lv_label_set_text(scanner_bat_icon, LV_SYMBOL_BATTERY_3);  /* Initial: 3/4 battery */
-    lv_obj_set_style_text_color(scanner_bat_icon, lv_color_hex(0x7FFF00), 0);  /* Lime green */
+    lv_obj_set_pos(scanner_bat_icon, 175, 30);
+    lv_label_set_text(scanner_bat_icon, LV_SYMBOL_BATTERY_3);
+    lv_obj_set_style_text_color(scanner_bat_icon, lv_color_hex(0x7FFF00), 0);
 
     scanner_bat_pct = lv_label_create(screen);
     lv_obj_set_style_text_font(scanner_bat_pct, &lv_font_unscii_8, 0);
-    lv_obj_set_pos(scanner_bat_pct, 238, 7);  /* 2px up */
-    lv_label_set_text(scanner_bat_pct, "?");  /* Unknown until battery read */
+    lv_obj_set_pos(scanner_bat_pct, 197, 33);
+    lv_label_set_text(scanner_bat_pct, "?");
     lv_obj_set_style_text_color(scanner_bat_pct, lv_color_hex(0x7FFF00), 0);
 
     /* Hide battery widget if disabled */
@@ -692,31 +703,32 @@ lv_obj_t *zmk_display_status_screen(void) {
     }
     LOG_INF("[INIT] scanner battery created (visible=%d)", ds_battery_visible);
 
-    /* ===== 3. WPM Widget (TOP_LEFT, centered under title) ===== */
+    /* ===== 3. WPM Widget (TOP_LEFT curve) ===== */
+    /* Positioned at x=35, y=30 to fit inside circle radius */
     LOG_INF("[INIT] Creating WPM...");
     wpm_title_label = lv_label_create(screen);
     lv_obj_set_style_text_font(wpm_title_label, &lv_font_unscii_8, 0);
     lv_obj_set_style_text_color(wpm_title_label, lv_color_make(0xA0, 0xA0, 0xA0), 0);
     lv_label_set_text(wpm_title_label, "WPM");
-    lv_obj_set_pos(wpm_title_label, 20, 53);  /* 3px down */
+    lv_obj_set_pos(wpm_title_label, 35, 30);
 
     wpm_value_label = lv_label_create(screen);
     lv_obj_set_style_text_font(wpm_value_label, &lv_font_montserrat_16, 0);
     lv_obj_set_style_text_color(wpm_value_label, lv_color_white(), 0);
-    lv_obj_set_width(wpm_value_label, 48);  /* Fixed width for centering */
+    lv_obj_set_width(wpm_value_label, 48);
     lv_obj_set_style_text_align(wpm_value_label, LV_TEXT_ALIGN_CENTER, 0);
     lv_label_set_text(wpm_value_label, "0");
-    lv_obj_set_pos(wpm_value_label, 8, 66);  /* 3px down */
+    lv_obj_set_pos(wpm_value_label, 23, 43);
     LOG_INF("[INIT] WPM created");
 
-    /* ===== 4. Connection Status (TOP_RIGHT) ===== */
+    /* ===== 4. Connection Status (CENTER_RIGHT, slightly up) ===== */
     LOG_INF("[INIT] Creating connection status...");
     transport_label = lv_label_create(screen);
     lv_obj_set_style_text_font(transport_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(transport_label, lv_color_white(), 0);
     lv_obj_set_style_text_align(transport_label, LV_TEXT_ALIGN_RIGHT, 0);
     lv_label_set_recolor(transport_label, true);
-    lv_obj_align(transport_label, LV_ALIGN_TOP_RIGHT, -10, 53);
+    lv_obj_align(transport_label, LV_ALIGN_TOP_RIGHT, -15, 60);
 
     /* Initial state: BLE with profile on new line */
     lv_label_set_text(transport_label, "#ffffff BLE#\n#ffffff 0#");
@@ -725,71 +737,64 @@ lv_obj_t *zmk_display_status_screen(void) {
     ble_profile_label = lv_label_create(screen);
     lv_obj_set_style_text_font(ble_profile_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(ble_profile_label, lv_color_white(), 0);
-    lv_label_set_text(ble_profile_label, "");  /* Hidden - integrated */
-    lv_obj_align(ble_profile_label, LV_ALIGN_TOP_RIGHT, -8, 78);
+    lv_label_set_text(ble_profile_label, "");
+    lv_obj_align(ble_profile_label, LV_ALIGN_TOP_RIGHT, -15, 85);
     LOG_INF("[INIT] connection status created");
 
-    /* ===== 5. Layer Widget (CENTER area, y=85-120) ===== */
+    /* ===== 5. Layer Widget (CENTER area, y=75-110) ===== */
     LOG_INF("[INIT] Creating layer widget...");
     layer_title_label = lv_label_create(screen);
     lv_obj_set_style_text_font(layer_title_label, &lv_font_montserrat_16, 0);
     lv_obj_set_style_text_color(layer_title_label, lv_color_make(160, 160, 160), 0);
     lv_obj_set_style_text_opa(layer_title_label, LV_OPA_70, 0);
     lv_label_set_text(layer_title_label, "Layer");
-    lv_obj_align(layer_title_label, LV_ALIGN_TOP_MID, 0, 82);  /* 3px up */
+    lv_obj_align(layer_title_label, LV_ALIGN_TOP_MID, 0, 72);
 
     /* Create layer display - slide mode OR fixed mode (list/over-max) */
     if (ds_layer_slide_mode) {
-        /* Slide mode: create 7-slot dial display */
-        create_layer_slide_widgets(screen, 105);
-        layer_mode_over_max = false;  /* Not used in slide mode */
+        create_layer_slide_widgets(screen, 95);
+        layer_mode_over_max = false;
     } else if (active_layer >= ds_max_layers) {
         layer_mode_over_max = true;
-        create_over_max_widget(screen, active_layer, 105);
+        create_over_max_widget(screen, active_layer, 95);
     } else {
         layer_mode_over_max = false;
-        create_layer_list_widgets(screen, 105);
+        create_layer_list_widgets(screen, 95);
     }
     LOG_INF("[INIT] layer widget created");
 
-    /* ===== 6. Modifier Widget (CENTER, y=145) - NerdFont icons ===== */
+    /* ===== 6. Modifier Widget (CENTER, y=135) - NerdFont icons ===== */
     LOG_INF("[INIT] Creating modifier widget with NerdFont...");
     modifier_label = lv_label_create(screen);
     lv_obj_set_style_text_font(modifier_label, &NerdFonts_Regular_40, 0);
     lv_obj_set_style_text_color(modifier_label, lv_color_white(), 0);
-    lv_obj_set_style_text_letter_space(modifier_label, 10, 0);  /* Space between icons */
-    lv_label_set_text(modifier_label, "");  /* Empty initially */
-    lv_obj_align(modifier_label, LV_ALIGN_TOP_MID, 0, 145);
+    lv_obj_set_style_text_letter_space(modifier_label, 10, 0);
+    lv_label_set_text(modifier_label, "");
+    lv_obj_align(modifier_label, LV_ALIGN_TOP_MID, 0, 135);
     LOG_INF("[INIT] modifier widget created");
 
     /* ===== 7. Keyboard Battery (dynamic layout for 1-4 batteries) ===== */
     LOG_INF("[INIT] Creating keyboard battery widgets...");
 
-    /* Position constants - configurable for different battery counts */
+    /* Compressed position constants to fit inside circular bottom */
     #define KB_BAR_HEIGHT      4
-    #define KB_BAR_Y_OFFSET    -33    /* Distance from bottom */
-    #define KB_PCT_Y_OFFSET    -42    /* Percentage label above bar */
-    #define KB_NAME_X_OFFSET   0      /* Name label right edge aligns with bar left edge */
+    #define KB_BAR_Y_OFFSET    -50    
+    #define KB_PCT_Y_OFFSET    -58    
+    #define KB_NAME_X_OFFSET   0      
 
-    /* Layout for different battery counts (bar width and positions) */
-    /* 1 battery: centered, width 165 (1.5x of 110) */
-    /* 2 batteries: L/R side by side, width 110 each */
-    /* 3 batteries: width 70 each, spread across */
-    /* 4 batteries: width 52 each, spread across */
-    #define KB_BAR_WIDTH_1     165
-    #define KB_BAR_WIDTH_2     110
-    #define KB_BAR_WIDTH_3     70
-    #define KB_BAR_WIDTH_4     52
+    #define KB_BAR_WIDTH_1     140
+    #define KB_BAR_WIDTH_2     80
+    #define KB_BAR_WIDTH_3     50
+    #define KB_BAR_WIDTH_4     40
 
-    /* X offsets for each layout (from center) */
+    /* Compressed X offsets */
     static const int16_t kb_x_offsets_1[] = {0};
-    static const int16_t kb_x_offsets_2[] = {-70, 70};
-    static const int16_t kb_x_offsets_3[] = {-90, 0, 90};
-    static const int16_t kb_x_offsets_4[] = {-100, -35, 35, 100};
+    static const int16_t kb_x_offsets_2[] = {-50, 50};
+    static const int16_t kb_x_offsets_3[] = {-65, 0, 65};
+    static const int16_t kb_x_offsets_4[] = {-80, -25, 25, 80};
 
     /* Create all 4 battery slot widgets (initially hidden) */
     for (int i = 0; i < MAX_KB_BATTERIES; i++) {
-        /* Default to 2-battery layout initially */
         int16_t bar_width = KB_BAR_WIDTH_2;
         int16_t x_offset = (i < 2) ? kb_x_offsets_2[i] : 0;
 
@@ -850,24 +855,24 @@ lv_obj_t *zmk_display_status_screen(void) {
 
     LOG_INF("[INIT] keyboard battery widgets created (4 slots)");
 
-    /* ===== 8. Signal Status (BOTTOM, y=220) ===== */
+    /* ===== 8. Signal Status (BOTTOM, y=200) ===== */
     LOG_INF("[INIT] Creating signal status...");
 
     channel_label = lv_label_create(screen);
     lv_obj_set_style_text_font(channel_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(channel_label, lv_color_make(0x80, 0x80, 0x80), 0);
     lv_label_set_text(channel_label, "Ch:0");
-    lv_obj_set_pos(channel_label, 62, 219);  /* 5px down, 5px left */
+    lv_obj_set_pos(channel_label, 50, 203);  
 
     rx_title_label = lv_label_create(screen);
     lv_obj_set_style_text_font(rx_title_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(rx_title_label, lv_color_make(0x80, 0x80, 0x80), 0);
     lv_label_set_text(rx_title_label, "RX:");
-    lv_obj_set_pos(rx_title_label, 102, 219);  /* 5px down, 5px left */
+    lv_obj_set_pos(rx_title_label, 85, 203);  
 
     rssi_bar = lv_bar_create(screen);
     lv_obj_set_size(rssi_bar, 30, 8);
-    lv_obj_set_pos(rssi_bar, 130, 223);  /* RX indicator position */
+    lv_obj_set_pos(rssi_bar, 110, 207);  
     lv_bar_set_range(rssi_bar, 0, 5);
     lv_bar_set_value(rssi_bar, 0, LV_ANIM_OFF);
     lv_obj_set_style_bg_color(rssi_bar, lv_color_make(0x20, 0x20, 0x20), LV_PART_MAIN);
@@ -881,13 +886,13 @@ lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_set_style_text_font(rssi_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(rssi_label, lv_color_make(0xA0, 0xA0, 0xA0), 0);
     lv_label_set_text(rssi_label, "0dBm");
-    lv_obj_set_pos(rssi_label, 167, 219);  /* 5px down, 5px left */
+    lv_obj_set_pos(rssi_label, 145, 203);  
 
     rate_label = lv_label_create(screen);
     lv_obj_set_style_text_font(rate_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(rate_label, lv_color_make(0xA0, 0xA0, 0xA0), 0);
     lv_label_set_text(rate_label, "0.0Hz");
-    lv_obj_set_pos(rate_label, 222, 219);  /* 5px down, 5px left */
+    lv_obj_set_pos(rate_label, 185, 203);  
     LOG_INF("[INIT] signal status created");
 
     LOG_INF("=============================================");
@@ -1024,7 +1029,7 @@ static void create_layer_list_widgets(lv_obj_t *parent, int y_offset) {
     int num_layers = ds_max_layers;
     int spacing = 25;
     int label_width = 22;
-    int start_x = 140 - ((num_layers - 1) * spacing / 2) - (label_width / 2);
+    int start_x = 120 - ((num_layers - 1) * spacing / 2) - (label_width / 2);
 
     for (int i = 0; i < num_layers && i < 10; i++) {
         layer_labels[i] = lv_label_create(parent);
@@ -1139,7 +1144,7 @@ static void start_layer_list_slide_in(void) {
     int num_layers = ds_max_layers;
     int spacing = 25;
     int label_width = 22;
-    int start_x = 140 - ((num_layers - 1) * spacing / 2) - (label_width / 2);
+    int start_x = 120 - ((num_layers - 1) * spacing / 2) - (label_width / 2);
     int slide_offset = 50;  /* Slide from 50px to the left */
 
     for (int i = 0; i < num_layers && i < 10 && layer_labels[i]; i++) {
@@ -1241,7 +1246,7 @@ static void create_layer_slide_widgets(lv_obj_t *parent, int y_offset) {
 
     /* Calculate start_x to center all slots */
     int total_width = (SLIDE_VISIBLE_COUNT - 1) * SLIDE_SLOT_SPACING;
-    int start_x = 140 - (total_width / 2);
+    int start_x = 120 - (total_width / 2);
 
     for (int i = 0; i < SLIDE_VISIBLE_COUNT; i++) {
         int layer_num = layer_slide_window_start + i;
@@ -1311,7 +1316,7 @@ static void destroy_layer_slide_widgets(void) {
 /* Reset all label positions to ensure they stay in correct place */
 static void slide_reset_positions(void) {
     int total_width = (SLIDE_VISIBLE_COUNT - 1) * SLIDE_SLOT_SPACING;
-    int start_x = 140 - (total_width / 2);
+    int start_x = 120 - (total_width / 2);
 
     for (int i = 0; i < SLIDE_VISIBLE_COUNT; i++) {
         if (layer_slide_labels[i]) {

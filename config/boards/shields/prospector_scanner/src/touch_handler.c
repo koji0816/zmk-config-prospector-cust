@@ -203,8 +203,8 @@ static void touch_input_callback(struct input_event *evt, void *user_data) {
 
                     // COORDINATE TRANSFORM for rotated display
                     // Touch Y → Display X (direct), Touch X → Display Y (inverted)
-                    int16_t dx = raw_dy;   // X: direct mapping
-                    int16_t dy = -raw_dx;  // Y: inverted
+                    int16_t dx = raw_dx;   // X: direct mapping
+                    int16_t dy = raw_dy;  // Y: inverted
 
                     int16_t abs_dx = (dx < 0) ? -dx : dx;
                     int16_t abs_dy = (dy < 0) ? -dy : dy;
@@ -263,11 +263,10 @@ INPUT_CALLBACK_DEFINE(DEVICE_DT_GET(TOUCH_NODE), touch_input_callback, NULL);
 static void lvgl_input_read(lv_indev_t *indev, lv_indev_data_t *data) {
     ARG_UNUSED(indev);
 
-    // Transform coordinates: swap X/Y axes
-    // Touch panel Y axis maps to display X axis (direct, no inversion)
-    // Touch panel X axis maps to display Y axis (inverted)
-    int32_t logical_x = current_y;           // Direct mapping
-    int32_t logical_y = 239 - current_x;     // Inverted
+    // Pass physical coordinates directly to LVGL
+    // LVGL will automatically apply the display rotation to these coordinates
+    int32_t logical_x = current_x;
+    int32_t logical_y = current_y;
 
     // Clamp to valid range
     if (logical_x < 0) logical_x = 0;
