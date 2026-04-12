@@ -201,10 +201,16 @@ static void touch_input_callback(struct input_event *evt, void *user_data) {
                     int16_t raw_dx = current_x - swipe_state.start_x;
                     int16_t raw_dy = current_y - swipe_state.start_y;
 
-                    // COORDINATE TRANSFORM for rotated display
-                    // Touch Y → Display X (direct), Touch X → Display Y (inverted)
-                    int16_t dx = raw_dx;   // X: direct mapping
-                    int16_t dy = raw_dy;  // Y: inverted
+                    // COORDINATE TRANSFORM for 90° CW hardware rotation:
+                    // In physical touch space, moving "right" (raw_dx>0) = LVGL "up"
+                    // In physical touch space, moving "down" (raw_dy>0) = LVGL "right"
+                    // Swipe directions are mapped accordingly:
+                    //   Physical UP   (raw_dy<0) → Display/Swipe LEFT
+                    //   Physical DOWN (raw_dy>0) → Display/Swipe RIGHT
+                    //   Physical LEFT  (raw_dx<0) → Display/Swipe DOWN
+                    //   Physical RIGHT (raw_dx>0) → Display/Swipe UP
+                    int16_t dx = raw_dy;   // physical Y movement → LVGL X axis swipe
+                    int16_t dy = -raw_dx;  // physical X movement (inverted) → LVGL Y axis swipe
 
                     int16_t abs_dx = (dx < 0) ? -dx : dx;
                     int16_t abs_dy = (dy < 0) ? -dy : dy;
@@ -255,18 +261,18 @@ static void touch_input_callback(struct input_event *evt, void *user_data) {
 INPUT_CALLBACK_DEFINE(DEVICE_DT_GET(TOUCH_NODE), touch_input_callback, NULL);
 
 // LVGL input device read callback (LVGL 9 API)
-// COORDINATE TRANSFORM:
-// - Touch panel physical: 240 x 280 (portrait)
-// - Display logical: 280 x 240 (landscape, rotated 90° via ST7789V mdac)
-// - Touch Y (0-279) → Display X (0-279) - direct mapping, NO inversion
-// - Touch X (0-239) → Display Y (239-0) - inverted
+// COORDINATE TRANSFORM for hardware rotation orientation="90" (90° CW):
+// - Touch panel reports in physical screen space (unaware of display rotation)
+// - Display hardware is rotated 90° CW (Type-C at bottom)
+// - Formula: LVGL_x = raw_touch_y
+//            LVGL_y = (240 - 1) - raw_touch_x
 static void lvgl_input_read(lv_indev_t *indev, lv_indev_data_t *data) {
     ARG_UNUSED(indev);
 
-    // Pass physical coordinates directly to LVGL
-    // For 240x240 display with hardware rotation, both X and Y are 0-239
-    int32_t logical_x = current_x;
-    int32_t logical_y = current_y;
+    // Apply 90° CW rotation transform to match hardware display orientation
+    // raw_x/raw_y are in touch panel native space (before display rotation)
+    int32_t logical_x = (int32_t)current_y;           // raw_y → LVGL x
+    int32_t logical_y = 239 - (int32_t)current_x;     // 239 - raw_x → LVGL y
 
     // Clamp to 240x240 valid range
     if (logical_x < 0) logical_x = 0;
