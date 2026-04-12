@@ -2423,80 +2423,78 @@ static void create_display_settings_widgets(void) {
     if (!screen_obj) return;
     LOG_INF("Creating display settings widgets (NO CONTAINER)...");
 
-    int y_pos = 15;
+    int y_pos = 40;  /* Title starts lower so it's inside circle - at y=40, width~179px */
 
     /* Title */
     ds_title_label = lv_label_create(screen_obj);
-    lv_obj_set_style_text_font(ds_title_label, &lv_font_montserrat_18, 0);
+    lv_obj_set_style_text_font(ds_title_label, &lv_font_montserrat_16, 0);
     lv_obj_set_style_text_color(ds_title_label, lv_color_white(), 0);
     lv_label_set_text(ds_title_label, "Display Settings");
     lv_obj_align(ds_title_label, LV_ALIGN_TOP_MID, 0, y_pos);
 
-    y_pos = 50;
+    y_pos = 68;  /* First section at y=68 - circle width ~200px at this height */
 
     /* ===== Brightness Section ===== */
     ds_brightness_label = lv_label_create(screen_obj);
-    lv_obj_set_style_text_font(ds_brightness_label, &lv_font_montserrat_16, 0);
+    lv_obj_set_style_text_font(ds_brightness_label, &lv_font_montserrat_14, 0);
     lv_obj_set_style_text_color(ds_brightness_label, lv_color_white(), 0);
     lv_label_set_text(ds_brightness_label, "Brightness");
-    lv_obj_set_pos(ds_brightness_label, 15, y_pos);
+    lv_obj_set_pos(ds_brightness_label, 28, y_pos);
 
-    /* Auto label */
+    /* Auto label - at x=145 (right of label, left of switch) */
     ds_auto_label = lv_label_create(screen_obj);
     lv_obj_set_style_text_font(ds_auto_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(ds_auto_label, lv_color_hex(0xAAAAAA), 0);
     lv_label_set_text(ds_auto_label, "Auto");
-    lv_obj_set_pos(ds_auto_label, 195, y_pos + 4);
+    lv_obj_set_pos(ds_auto_label, 140, y_pos + 4);
 
-    /* Auto switch (iOS style) */
+    /* Auto switch - at x=175 (50px wide => right edge x=225, safe at y=68, width~200) */
     ds_auto_switch = lv_switch_create(screen_obj);
-    lv_obj_set_size(ds_auto_switch, 50, 28);
-    lv_obj_set_pos(ds_auto_switch, 230, y_pos);
+    lv_obj_set_size(ds_auto_switch, 44, 24);
+    lv_obj_set_pos(ds_auto_switch, 176, y_pos);
     if (ds_auto_brightness_enabled) {
         lv_obj_add_state(ds_auto_switch, LV_STATE_CHECKED);
     }
-    /* iOS-style switch styling */
-    lv_obj_set_style_radius(ds_auto_switch, 14, LV_PART_MAIN);
+    lv_obj_set_style_radius(ds_auto_switch, 12, LV_PART_MAIN);
     lv_obj_set_style_bg_color(ds_auto_switch, lv_color_hex(0x3A3A3C), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(ds_auto_switch, LV_OPA_COVER, LV_PART_MAIN);
-    lv_obj_set_style_radius(ds_auto_switch, 14, LV_PART_INDICATOR);
+    lv_obj_set_style_radius(ds_auto_switch, 12, LV_PART_INDICATOR);
     lv_obj_set_style_bg_color(ds_auto_switch, lv_color_hex(0x34C759), LV_PART_INDICATOR | LV_STATE_CHECKED);
     lv_obj_set_style_bg_color(ds_auto_switch, lv_color_hex(0x3A3A3C), LV_PART_INDICATOR);
-    lv_obj_set_style_bg_opa(ds_auto_switch, LV_OPA_COVER, LV_PART_INDICATOR);  /* CRITICAL for visibility */
+    lv_obj_set_style_bg_opa(ds_auto_switch, LV_OPA_COVER, LV_PART_INDICATOR);
     lv_obj_set_style_radius(ds_auto_switch, LV_RADIUS_CIRCLE, LV_PART_KNOB);
     lv_obj_set_style_bg_color(ds_auto_switch, lv_color_white(), LV_PART_KNOB);
-    lv_obj_set_style_bg_opa(ds_auto_switch, LV_OPA_COVER, LV_PART_KNOB);  /* CRITICAL for visibility */
+    lv_obj_set_style_bg_opa(ds_auto_switch, LV_OPA_COVER, LV_PART_KNOB);
     lv_obj_set_style_pad_all(ds_auto_switch, -2, LV_PART_KNOB);
     lv_obj_set_style_border_width(ds_auto_switch, 0, LV_PART_MAIN);
-    lv_obj_set_ext_click_area(ds_auto_switch, 15);  /* Extend tap area for easier touch */
+    lv_obj_set_ext_click_area(ds_auto_switch, 12);
     lv_obj_add_event_cb(ds_auto_switch, ds_auto_switch_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
     /* Disable auto switch if sensor is not available */
     if (!brightness_control_sensor_available()) {
         lv_obj_add_state(ds_auto_switch, LV_STATE_DISABLED);
         lv_obj_set_style_opa(ds_auto_switch, LV_OPA_50, 0);
-        lv_label_set_text(ds_auto_label, "Auto (No sensor)");
+        lv_label_set_text(ds_auto_label, "(no sensor)");
     }
 
-    y_pos += 35;
+    y_pos += 30;
 
-    /* Brightness slider (iOS style) */
+    /* Brightness slider - 150px wide from x=28 to x=178 */
     ds_brightness_slider = lv_slider_create(screen_obj);
-    lv_obj_set_size(ds_brightness_slider, 180, 6);
-    lv_obj_set_pos(ds_brightness_slider, 15, y_pos + 8);
+    lv_obj_set_size(ds_brightness_slider, 150, 6);
+    lv_obj_set_pos(ds_brightness_slider, 28, y_pos + 7);
     lv_slider_set_range(ds_brightness_slider, 1, 100);
     lv_slider_set_value(ds_brightness_slider, ds_manual_brightness, LV_ANIM_OFF);
-    lv_obj_set_ext_click_area(ds_brightness_slider, 20);
-    /* iOS-style slider styling */
+    lv_obj_set_ext_click_area(ds_brightness_slider, 18);
     lv_obj_set_style_radius(ds_brightness_slider, 3, LV_PART_MAIN);
     lv_obj_set_style_bg_color(ds_brightness_slider, lv_color_hex(0x3A3A3C), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(ds_brightness_slider, LV_OPA_COVER, LV_PART_MAIN);
     lv_obj_set_style_radius(ds_brightness_slider, 3, LV_PART_INDICATOR);
     lv_obj_set_style_bg_color(ds_brightness_slider, lv_color_hex(0x007AFF), LV_PART_INDICATOR);
-    lv_obj_set_style_bg_opa(ds_brightness_slider, LV_OPA_COVER, LV_PART_INDICATOR);  /* CRITICAL for visibility */
+    lv_obj_set_style_bg_opa(ds_brightness_slider, LV_OPA_COVER, LV_PART_INDICATOR);
     lv_obj_set_style_radius(ds_brightness_slider, LV_RADIUS_CIRCLE, LV_PART_KNOB);
     lv_obj_set_style_bg_color(ds_brightness_slider, lv_color_white(), LV_PART_KNOB);
-    lv_obj_set_style_bg_opa(ds_brightness_slider, LV_OPA_COVER, LV_PART_KNOB);  /* CRITICAL for visibility */
+    lv_obj_set_style_bg_opa(ds_brightness_slider, LV_OPA_COVER, LV_PART_KNOB);
     lv_obj_set_style_pad_all(ds_brightness_slider, 8, LV_PART_KNOB);
     lv_obj_set_style_shadow_width(ds_brightness_slider, 4, LV_PART_KNOB);
     lv_obj_set_style_shadow_color(ds_brightness_slider, lv_color_black(), LV_PART_KNOB);
@@ -2506,79 +2504,76 @@ static void create_display_settings_widgets(void) {
         lv_obj_set_style_opa(ds_brightness_slider, LV_OPA_50, 0);
     }
     lv_obj_add_event_cb(ds_brightness_slider, ds_brightness_slider_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
-    /* Custom drag handler for inverted X coordinate */
     lv_obj_add_event_cb(ds_brightness_slider, ds_custom_slider_drag_cb, LV_EVENT_PRESSED, NULL);
     lv_obj_add_event_cb(ds_brightness_slider, ds_custom_slider_drag_cb, LV_EVENT_PRESSING, NULL);
     lv_obj_add_event_cb(ds_brightness_slider, ds_custom_slider_drag_cb, LV_EVENT_RELEASED, NULL);
 
-    /* Brightness value label */
+    /* Brightness value label at x=185, right of slider */
     ds_brightness_value = lv_label_create(screen_obj);
-    lv_obj_set_style_text_font(ds_brightness_value, &lv_font_montserrat_16, 0);
+    lv_obj_set_style_text_font(ds_brightness_value, &lv_font_montserrat_14, 0);
     lv_obj_set_style_text_color(ds_brightness_value, lv_color_hex(0x007AFF), 0);
     char buf[8];
     snprintf(buf, sizeof(buf), "%d%%", ds_manual_brightness);
     lv_label_set_text(ds_brightness_value, buf);
-    lv_obj_set_pos(ds_brightness_value, 230, y_pos);
+    lv_obj_set_pos(ds_brightness_value, 186, y_pos);
 
-    y_pos += 30;  /* Compact spacing */
+    y_pos += 28;
 
     /* ===== Battery Section ===== */
     ds_battery_label = lv_label_create(screen_obj);
-    lv_obj_set_style_text_font(ds_battery_label, &lv_font_montserrat_16, 0);
+    lv_obj_set_style_text_font(ds_battery_label, &lv_font_montserrat_14, 0);
     lv_obj_set_style_text_color(ds_battery_label, lv_color_white(), 0);
-    lv_label_set_text(ds_battery_label, "Scanner Battery");
-    lv_obj_set_pos(ds_battery_label, 15, y_pos);
+    lv_label_set_text(ds_battery_label, "Bat. Widget");
+    lv_obj_set_pos(ds_battery_label, 28, y_pos);
 
-    /* Battery switch */
+    /* Battery switch at x=176 */
     ds_battery_switch = lv_switch_create(screen_obj);
-    lv_obj_set_size(ds_battery_switch, 50, 28);
-    lv_obj_set_pos(ds_battery_switch, 230, y_pos - 3);
+    lv_obj_set_size(ds_battery_switch, 44, 24);
+    lv_obj_set_pos(ds_battery_switch, 176, y_pos - 2);
     if (ds_battery_visible) {
         lv_obj_add_state(ds_battery_switch, LV_STATE_CHECKED);
     }
-    /* Same iOS styling */
-    lv_obj_set_style_radius(ds_battery_switch, 14, LV_PART_MAIN);
+    lv_obj_set_style_radius(ds_battery_switch, 12, LV_PART_MAIN);
     lv_obj_set_style_bg_color(ds_battery_switch, lv_color_hex(0x3A3A3C), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(ds_battery_switch, LV_OPA_COVER, LV_PART_MAIN);
-    lv_obj_set_style_radius(ds_battery_switch, 14, LV_PART_INDICATOR);
+    lv_obj_set_style_radius(ds_battery_switch, 12, LV_PART_INDICATOR);
     lv_obj_set_style_bg_color(ds_battery_switch, lv_color_hex(0x34C759), LV_PART_INDICATOR | LV_STATE_CHECKED);
     lv_obj_set_style_bg_color(ds_battery_switch, lv_color_hex(0x3A3A3C), LV_PART_INDICATOR);
-    lv_obj_set_style_bg_opa(ds_battery_switch, LV_OPA_COVER, LV_PART_INDICATOR);  /* CRITICAL for visibility */
+    lv_obj_set_style_bg_opa(ds_battery_switch, LV_OPA_COVER, LV_PART_INDICATOR);
     lv_obj_set_style_radius(ds_battery_switch, LV_RADIUS_CIRCLE, LV_PART_KNOB);
     lv_obj_set_style_bg_color(ds_battery_switch, lv_color_white(), LV_PART_KNOB);
-    lv_obj_set_style_bg_opa(ds_battery_switch, LV_OPA_COVER, LV_PART_KNOB);  /* CRITICAL for visibility */
+    lv_obj_set_style_bg_opa(ds_battery_switch, LV_OPA_COVER, LV_PART_KNOB);
     lv_obj_set_style_pad_all(ds_battery_switch, -2, LV_PART_KNOB);
     lv_obj_set_style_border_width(ds_battery_switch, 0, LV_PART_MAIN);
-    lv_obj_set_ext_click_area(ds_battery_switch, 15);  /* Extend tap area for easier touch */
+    lv_obj_set_ext_click_area(ds_battery_switch, 12);
     lv_obj_add_event_cb(ds_battery_switch, ds_battery_switch_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
-    y_pos += 35;  /* Slightly more space before Max Layers */
+    y_pos += 30;
 
     /* ===== Max Layers Section ===== */
     ds_layer_label = lv_label_create(screen_obj);
-    lv_obj_set_style_text_font(ds_layer_label, &lv_font_montserrat_16, 0);
+    lv_obj_set_style_text_font(ds_layer_label, &lv_font_montserrat_14, 0);
     lv_obj_set_style_text_color(ds_layer_label, lv_color_white(), 0);
     lv_label_set_text(ds_layer_label, "Max Layers");
-    lv_obj_set_pos(ds_layer_label, 15, y_pos);
+    lv_obj_set_pos(ds_layer_label, 28, y_pos);
 
-    /* Slide label and switch (same row as Max Layers, like Auto is on Brightness row) */
+    /* Slide label and switch on same row */
     ds_slide_label = lv_label_create(screen_obj);
     lv_obj_set_style_text_font(ds_slide_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(ds_slide_label, lv_color_hex(0xAAAAAA), 0);
     lv_label_set_text(ds_slide_label, "Slide");
-    lv_obj_set_pos(ds_slide_label, 195, y_pos + 4);  /* Same x as Auto label */
+    lv_obj_set_pos(ds_slide_label, 140, y_pos + 4);
 
     ds_slide_switch = lv_switch_create(screen_obj);
-    lv_obj_set_size(ds_slide_switch, 50, 28);  /* Same size as Auto switch */
-    lv_obj_set_pos(ds_slide_switch, 230, y_pos);  /* Same x as Auto switch */
+    lv_obj_set_size(ds_slide_switch, 44, 24);
+    lv_obj_set_pos(ds_slide_switch, 176, y_pos);
     if (ds_layer_slide_mode) {
         lv_obj_add_state(ds_slide_switch, LV_STATE_CHECKED);
     }
-    /* iOS-style switch styling (same as Auto) */
-    lv_obj_set_style_radius(ds_slide_switch, 14, LV_PART_MAIN);
+    lv_obj_set_style_radius(ds_slide_switch, 12, LV_PART_MAIN);
     lv_obj_set_style_bg_color(ds_slide_switch, lv_color_hex(0x3A3A3C), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(ds_slide_switch, LV_OPA_COVER, LV_PART_MAIN);
-    lv_obj_set_style_radius(ds_slide_switch, 14, LV_PART_INDICATOR);
+    lv_obj_set_style_radius(ds_slide_switch, 12, LV_PART_INDICATOR);
     lv_obj_set_style_bg_color(ds_slide_switch, lv_color_hex(0x34C759), LV_PART_INDICATOR | LV_STATE_CHECKED);
     lv_obj_set_style_bg_color(ds_slide_switch, lv_color_hex(0x3A3A3C), LV_PART_INDICATOR);
     lv_obj_set_style_bg_opa(ds_slide_switch, LV_OPA_COVER, LV_PART_INDICATOR);
@@ -2587,52 +2582,50 @@ static void create_display_settings_widgets(void) {
     lv_obj_set_style_bg_opa(ds_slide_switch, LV_OPA_COVER, LV_PART_KNOB);
     lv_obj_set_style_pad_all(ds_slide_switch, -2, LV_PART_KNOB);
     lv_obj_set_style_border_width(ds_slide_switch, 0, LV_PART_MAIN);
-    lv_obj_set_ext_click_area(ds_slide_switch, 15);  /* Same as Auto */
+    lv_obj_set_ext_click_area(ds_slide_switch, 12);
     lv_obj_add_event_cb(ds_slide_switch, ds_slide_switch_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
-    y_pos += 35;  /* Space between Max Layers label and slider */
+    y_pos += 30;
 
     /* Layer slider */
     ds_layer_slider = lv_slider_create(screen_obj);
-    lv_obj_set_size(ds_layer_slider, 180, 6);
-    lv_obj_set_pos(ds_layer_slider, 15, y_pos + 8);
+    lv_obj_set_size(ds_layer_slider, 150, 6);
+    lv_obj_set_pos(ds_layer_slider, 28, y_pos + 7);
     lv_slider_set_range(ds_layer_slider, 4, 10);
     lv_slider_set_value(ds_layer_slider, ds_max_layers, LV_ANIM_OFF);
-    lv_obj_set_ext_click_area(ds_layer_slider, 20);
-    /* Same iOS styling */
+    lv_obj_set_ext_click_area(ds_layer_slider, 18);
     lv_obj_set_style_radius(ds_layer_slider, 3, LV_PART_MAIN);
     lv_obj_set_style_bg_color(ds_layer_slider, lv_color_hex(0x3A3A3C), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(ds_layer_slider, LV_OPA_COVER, LV_PART_MAIN);
     lv_obj_set_style_radius(ds_layer_slider, 3, LV_PART_INDICATOR);
     lv_obj_set_style_bg_color(ds_layer_slider, lv_color_hex(0x007AFF), LV_PART_INDICATOR);
-    lv_obj_set_style_bg_opa(ds_layer_slider, LV_OPA_COVER, LV_PART_INDICATOR);  /* CRITICAL for visibility */
+    lv_obj_set_style_bg_opa(ds_layer_slider, LV_OPA_COVER, LV_PART_INDICATOR);
     lv_obj_set_style_radius(ds_layer_slider, LV_RADIUS_CIRCLE, LV_PART_KNOB);
     lv_obj_set_style_bg_color(ds_layer_slider, lv_color_white(), LV_PART_KNOB);
-    lv_obj_set_style_bg_opa(ds_layer_slider, LV_OPA_COVER, LV_PART_KNOB);  /* CRITICAL for visibility */
+    lv_obj_set_style_bg_opa(ds_layer_slider, LV_OPA_COVER, LV_PART_KNOB);
     lv_obj_set_style_pad_all(ds_layer_slider, 8, LV_PART_KNOB);
     lv_obj_set_style_shadow_width(ds_layer_slider, 4, LV_PART_KNOB);
     lv_obj_set_style_shadow_color(ds_layer_slider, lv_color_black(), LV_PART_KNOB);
     lv_obj_set_style_shadow_opa(ds_layer_slider, LV_OPA_30, LV_PART_KNOB);
     lv_obj_add_event_cb(ds_layer_slider, ds_layer_slider_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
-    /* Custom drag handler for inverted X coordinate */
     lv_obj_add_event_cb(ds_layer_slider, ds_custom_slider_drag_cb, LV_EVENT_PRESSED, NULL);
     lv_obj_add_event_cb(ds_layer_slider, ds_custom_slider_drag_cb, LV_EVENT_PRESSING, NULL);
     lv_obj_add_event_cb(ds_layer_slider, ds_custom_slider_drag_cb, LV_EVENT_RELEASED, NULL);
 
-    /* Layer value label (aligned with Brightness value at x=230) */
+    /* Layer value label at x=185, same column as brightness value */
     ds_layer_value = lv_label_create(screen_obj);
-    lv_obj_set_style_text_font(ds_layer_value, &lv_font_montserrat_16, 0);
+    lv_obj_set_style_text_font(ds_layer_value, &lv_font_montserrat_14, 0);
     lv_obj_set_style_text_color(ds_layer_value, lv_color_hex(0x007AFF), 0);
     snprintf(buf, sizeof(buf), "%d", ds_max_layers);
     lv_label_set_text(ds_layer_value, buf);
-    lv_obj_set_pos(ds_layer_value, 230, y_pos);
+    lv_obj_set_pos(ds_layer_value, 186, y_pos);
 
     /* Navigation hint */
     ds_nav_hint = lv_label_create(screen_obj);
     lv_obj_set_style_text_font(ds_nav_hint, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(ds_nav_hint, lv_color_hex(0x808080), 0);
     lv_label_set_text(ds_nav_hint, LV_SYMBOL_UP " Main");
-    lv_obj_align(ds_nav_hint, LV_ALIGN_BOTTOM_MID, 0, -10);
+    lv_obj_align(ds_nav_hint, LV_ALIGN_BOTTOM_MID, 0, -20);
 
     LOG_INF("Display settings widgets created");
 }
@@ -2669,8 +2662,8 @@ static void create_system_settings_widgets(void) {
 
     /* Bootloader button (blue) - position matches original system_settings_widget.c */
     ss_bootloader_btn = lv_btn_create(screen_obj);
-    lv_obj_set_size(ss_bootloader_btn, 200, 60);
-    lv_obj_align(ss_bootloader_btn, LV_ALIGN_CENTER, 0, -15);  /* Original position */
+    lv_obj_set_size(ss_bootloader_btn, 160, 50);
+    lv_obj_align(ss_bootloader_btn, LV_ALIGN_CENTER, 0, -20);
     lv_obj_set_style_bg_color(ss_bootloader_btn, lv_color_hex(0x4A90E2), LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ss_bootloader_btn, lv_color_hex(0x357ABD), LV_STATE_PRESSED);
     lv_obj_set_style_bg_opa(ss_bootloader_btn, LV_OPA_COVER, LV_STATE_DEFAULT);
@@ -2693,8 +2686,8 @@ static void create_system_settings_widgets(void) {
 
     /* Reset button (red) - position matches original system_settings_widget.c */
     ss_reset_btn = lv_btn_create(screen_obj);
-    lv_obj_set_size(ss_reset_btn, 200, 60);
-    lv_obj_align(ss_reset_btn, LV_ALIGN_CENTER, 0, 55);  /* Original position */
+    lv_obj_set_size(ss_reset_btn, 160, 50);
+    lv_obj_align(ss_reset_btn, LV_ALIGN_CENTER, 0, 35);
     lv_obj_set_style_bg_color(ss_reset_btn, lv_color_hex(0xE24A4A), LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ss_reset_btn, lv_color_hex(0xC93A3A), LV_STATE_PRESSED);
     lv_obj_set_style_bg_opa(ss_reset_btn, LV_OPA_COVER, LV_STATE_DEFAULT);

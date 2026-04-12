@@ -264,13 +264,13 @@ static void lvgl_input_read(lv_indev_t *indev, lv_indev_data_t *data) {
     ARG_UNUSED(indev);
 
     // Pass physical coordinates directly to LVGL
-    // LVGL will automatically apply the display rotation to these coordinates
+    // For 240x240 display with hardware rotation, both X and Y are 0-239
     int32_t logical_x = current_x;
     int32_t logical_y = current_y;
 
-    // Clamp to valid range
+    // Clamp to 240x240 valid range
     if (logical_x < 0) logical_x = 0;
-    if (logical_x > 279) logical_x = 279;
+    if (logical_x > 239) logical_x = 239;
     if (logical_y < 0) logical_y = 0;
     if (logical_y > 239) logical_y = 239;
 
