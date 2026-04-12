@@ -7,9 +7,14 @@
     };
 };
 
-/* 元のタッチセンサーのリセットピン（D1）が新しいディスプレイのCSピンと被るため無効化 */
+/* 元のモジュールがKconfig上で CST816S を強制要求するため、ダミーのエントリを作成してビルドエラーを回避する。
+ * 通信や割り込みピンには使っていないピン(P0.02)をアサインして悪影響が出ないようにする。 */
 &touch_sensor {
-    status = "disabled";
+    status = "okay";
+    /delete-property/ irq-gpios;
+    /delete-property/ rst-gpios;
+    irq-gpios = <&xiao_d 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+    rst-gpios = <&xiao_d 10 GPIO_ACTIVE_LOW>;
 };
 
 /* XIAO Round Display のタッチセンサー (CHSC6416) を I2C0 に追加 */
