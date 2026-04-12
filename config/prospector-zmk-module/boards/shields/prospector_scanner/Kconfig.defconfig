@@ -1,0 +1,46 @@
+# Prospector Scanner - Using display_test Kconfig.defconfig for debugging
+
+if SHIELD_PROSPECTOR_SCANNER
+
+config ZMK_KEYBOARD_NAME
+    default "Prospector"
+
+config ZMK_DISPLAY
+    default y
+
+# MIPI DBI for ST7789V (bool required for Zephyr 3.5.0 compatibility)
+config MIPI_DBI
+    bool
+    default y
+
+config SPI
+    default y
+
+# ST7789V pixel format
+choice ST7789V_PIXEL_FORMAT
+    default ST7789V_RGB565
+endchoice
+
+# LVGL basic settings
+config LV_Z_VDB_SIZE
+    default 100
+
+config LV_DPI_DEF
+    default 261
+
+config LV_Z_BITS_PER_PIXEL
+    default 16
+
+choice LV_COLOR_DEPTH
+    default LV_COLOR_DEPTH_16
+endchoice
+
+config LV_COLOR_16_SWAP
+    default y
+
+# Step 3: Use CUSTOM screen (like display_test)
+choice ZMK_DISPLAY_STATUS_SCREEN
+    default ZMK_DISPLAY_STATUS_SCREEN_CUSTOM
+endchoice
+
+endif

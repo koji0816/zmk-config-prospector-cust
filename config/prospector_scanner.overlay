@@ -7,15 +7,28 @@
     };
 };
 
+/* 元のタッチセンサーのリセットピン（D1）が新しいディスプレイのCSピンと被るため無効化 */
+&touch_sensor {
+    status = "disabled";
+};
+
+/* XIAO Round Display のタッチセンサー (CHSC6416) を I2C0 に追加 */
+&i2c0 {
+    status = "okay";
+    chsc6x_touch: chsc6x@2e {
+        compatible = "chipsemi,chsc6x";
+        reg = <0x2e>;
+        irq-gpios = <&xiao_d 7 GPIO_ACTIVE_LOW>;
+        /* width/height properties can be configured here if necessary */
+    };
+};
+
 /* 既存の四角ディスプレイは、中身をいじらずに電源だけ切る（エラー回避） */
 &st7789v {
     status = "disabled";
 };
 
-/* 元のタッチセンサーのリセットピン（D1）が新しいディスプレイのCSピンと被るため無効化 */
-&touch_sensor {
-    status = "disabled";
-};
+
 
 /* * SPIバスの管理枠を2つに増やします。
  * [0] = 元のディスプレイ用 (ダミーとして残す)
