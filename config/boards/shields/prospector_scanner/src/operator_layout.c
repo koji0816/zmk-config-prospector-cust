@@ -283,8 +283,9 @@ static void create_modifier_indicator(lv_obj_t *parent) {
     const operator_color_palette_t *p = &color_palettes[current_palette];
 
     modifier_widgets.container = lv_obj_create(parent);
-    lv_obj_set_size(modifier_widgets.container, 230, 24);  /* Original: 230x24 */
-    lv_obj_set_pos(modifier_widgets.container, 25, 8);     /* Original: x=25, y=8 */
+    /* At y=30, circle width ~2*sqrt(120^2-90^2) = ~159px. Use 150px wide, centered at (45,30). */
+    lv_obj_set_size(modifier_widgets.container, 150, 24);
+    lv_obj_set_pos(modifier_widgets.container, 45, 30);
     lv_obj_set_style_bg_opa(modifier_widgets.container, LV_OPA_TRANSP, LV_PART_MAIN);
     lv_obj_set_style_border_width(modifier_widgets.container, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(modifier_widgets.container, 0, LV_PART_MAIN);
@@ -335,17 +336,18 @@ static void update_modifier_indicator(uint8_t modifier_flags) {
 
 static void create_wpm_meter(lv_obj_t *parent) {
     wpm_widgets.container = lv_obj_create(parent);
-    lv_obj_set_size(wpm_widgets.container, 260, 90);  /* Original: 260x90 */
-    lv_obj_set_pos(wpm_widgets.container, 10, 42);    /* Original: x=10, y=42 */
+    /* At y=60, circle width ~2*sqrt(120^2-60^2) = ~208px. Use 200px at x=20. */
+    lv_obj_set_size(wpm_widgets.container, 200, 80);
+    lv_obj_set_pos(wpm_widgets.container, 20, 60);
     lv_obj_set_style_bg_opa(wpm_widgets.container, LV_OPA_TRANSP, LV_PART_MAIN);
     lv_obj_set_style_border_width(wpm_widgets.container, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(wpm_widgets.container, 0, LV_PART_MAIN);
 
     int bar_width = 8;
     int bar_gap = 2;
-    int bar_height = 90;
+    int bar_height = 80;
     int total_width = WPM_BAR_COUNT * bar_width + (WPM_BAR_COUNT - 1) * bar_gap;
-    int start_x = (260 - total_width) / 2;  /* Use original width 260 */
+    int start_x = (200 - total_width) / 2;  /* Center in 200px container */
 
     /* Create WPM bars */
     for (int i = 0; i < WPM_BAR_COUNT; i++) {
@@ -427,8 +429,9 @@ static void update_wpm_meter(uint8_t wpm, const char *layer_name) {
 
 static void create_layer_display(lv_obj_t *parent) {
     layer_widgets.container = lv_obj_create(parent);
-    lv_obj_set_size(layer_widgets.container, 260, 6);  /* Original: 260x6 */
-    lv_obj_set_pos(layer_widgets.container, 10, 142);  /* Original: x=10, y=142 */
+    /* At y=148, center line. Circle width ~2*sqrt(120^2-28^2)=~232px. Use 200px at x=20. */
+    lv_obj_set_size(layer_widgets.container, 200, 6);
+    lv_obj_set_pos(layer_widgets.container, 20, 148);
     lv_obj_set_style_bg_opa(layer_widgets.container, LV_OPA_TRANSP, LV_PART_MAIN);
     lv_obj_set_style_border_width(layer_widgets.container, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(layer_widgets.container, 0, LV_PART_MAIN);
@@ -456,7 +459,7 @@ static void update_layer_display(uint8_t active_layer) {
     /* Reconfigure dots if layer count changed */
     if (layer_count != layer_widgets.dot_count) {
         int dot_gap = 3;
-        int dot_width = (260 - (layer_count - 1) * dot_gap) / layer_count;
+        int dot_width = (200 - (layer_count - 1) * dot_gap) / layer_count;  /* 200px container */
 
         /* Update size and position for all dots */
         for (int i = 0; i < LAYER_DOT_MAX; i++) {
@@ -514,16 +517,17 @@ static void create_battery_arc(lv_obj_t *parent, lv_obj_t **arc, lv_obj_t **labe
 
 static void create_battery_circles(lv_obj_t *parent) {
     battery_widgets.container = lv_obj_create(parent);
-    lv_obj_set_size(battery_widgets.container, 132, 62);  /* Original: 132x62 */
-    lv_obj_set_pos(battery_widgets.container, 11, 170);   /* Original: x=11, y=170 */
+    /* At y=162, circle width ~2*sqrt(120^2-42^2)=~228px. Split in 2: battery=110px at x=15. */
+    lv_obj_set_size(battery_widgets.container, 110, 56);
+    lv_obj_set_pos(battery_widgets.container, 15, 162);
     lv_obj_set_style_bg_opa(battery_widgets.container, LV_OPA_TRANSP, LV_PART_MAIN);
     lv_obj_set_style_border_width(battery_widgets.container, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(battery_widgets.container, 0, LV_PART_MAIN);
 
-    /* Two arcs side by side (like PERIPHERAL_COUNT == 2 in carrefinho) */
-    int arc_size = 58;
-    int y_center = (62 - arc_size) / 2;
-    int spacing = 66;
+    /* Two arcs side by side, compact to fit 110px */
+    int arc_size = 50;
+    int y_center = (56 - arc_size) / 2;
+    int spacing = 56;
 
     /* Central (left arc) */
     battery_widgets.central_arc = lv_arc_create(battery_widgets.container);
@@ -663,8 +667,8 @@ static void update_battery_circles(uint8_t central_level, bool central_connected
 
 static void create_battery_bars(lv_obj_t *parent, int count) {
     battery_widgets.container = lv_obj_create(parent);
-    lv_obj_set_size(battery_widgets.container, 132, 62);
-    lv_obj_set_pos(battery_widgets.container, 11, 170);
+    lv_obj_set_size(battery_widgets.container, 110, 56);
+    lv_obj_set_pos(battery_widgets.container, 15, 162);
     lv_obj_set_style_bg_opa(battery_widgets.container, LV_OPA_TRANSP, LV_PART_MAIN);
     lv_obj_set_style_border_width(battery_widgets.container, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(battery_widgets.container, 0, LV_PART_MAIN);
@@ -958,21 +962,23 @@ static void update_ble_slot_animation(uint8_t ble_profile, ble_profile_state_t n
 
 static void create_output_indicator(lv_obj_t *parent) {
     output_widgets.container = lv_obj_create(parent);
-    lv_obj_set_size(output_widgets.container, 116, 62);  /* Original: 116x62 */
-    lv_obj_set_pos(output_widgets.container, 148, 170);  /* Original: x=148, y=170 */
+    /* At y=162, right half: battery ends at x=125 so output starts at x=128. Width=100px.
+     * At y=162, circle right edge = 120+sqrt(120^2-42^2) = 120+114 = 234. Use to x=228. */
+    lv_obj_set_size(output_widgets.container, 100, 56);
+    lv_obj_set_pos(output_widgets.container, 128, 162);
     lv_obj_set_style_bg_opa(output_widgets.container, LV_OPA_TRANSP, LV_PART_MAIN);
     lv_obj_set_style_border_width(output_widgets.container, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(output_widgets.container, 0, LV_PART_MAIN);
 
-    /* USB box - Original: 56x29 at (0, 0) with radius 6 */
+    /* USB box - compact: 44x25 at (0, 0) */
     output_widgets.usb_box = lv_obj_create(output_widgets.container);
-    lv_obj_set_size(output_widgets.usb_box, 56, 29);
+    lv_obj_set_size(output_widgets.usb_box, 44, 25);
     lv_obj_set_pos(output_widgets.usb_box, 0, 0);
     lv_obj_set_style_bg_opa(output_widgets.usb_box, LV_OPA_TRANSP, LV_PART_MAIN);
     lv_obj_set_style_border_width(output_widgets.usb_box, 2, LV_PART_MAIN);
     lv_obj_set_style_border_color(output_widgets.usb_box,
                                   lv_color_hex(DISPLAY_COLOR_USB_INACTIVE_BG), LV_PART_MAIN);
-    lv_obj_set_style_radius(output_widgets.usb_box, 6, LV_PART_MAIN);
+    lv_obj_set_style_radius(output_widgets.usb_box, 5, LV_PART_MAIN);
     lv_obj_set_style_pad_all(output_widgets.usb_box, 0, LV_PART_MAIN);
 
     output_widgets.usb_label = lv_label_create(output_widgets.usb_box);
@@ -983,15 +989,15 @@ static void create_output_indicator(lv_obj_t *parent) {
     lv_obj_center(output_widgets.usb_label);
     lv_obj_set_style_translate_y(output_widgets.usb_label, 1, LV_PART_MAIN);
 
-    /* BLE box - Original: 56x29 at (58, 0) with radius 6 */
+    /* BLE box - compact: 44x25 at (48, 0) */
     output_widgets.ble_box = lv_obj_create(output_widgets.container);
-    lv_obj_set_size(output_widgets.ble_box, 56, 29);
-    lv_obj_set_pos(output_widgets.ble_box, 58, 0);
+    lv_obj_set_size(output_widgets.ble_box, 44, 25);
+    lv_obj_set_pos(output_widgets.ble_box, 48, 0);
     lv_obj_set_style_bg_opa(output_widgets.ble_box, LV_OPA_TRANSP, LV_PART_MAIN);
     lv_obj_set_style_border_width(output_widgets.ble_box, 2, LV_PART_MAIN);
     lv_obj_set_style_border_color(output_widgets.ble_box,
                                   lv_color_hex(DISPLAY_COLOR_BLE_INACTIVE_BG), LV_PART_MAIN);
-    lv_obj_set_style_radius(output_widgets.ble_box, 6, LV_PART_MAIN);
+    lv_obj_set_style_radius(output_widgets.ble_box, 5, LV_PART_MAIN);
     lv_obj_set_style_pad_all(output_widgets.ble_box, 0, LV_PART_MAIN);
 
     output_widgets.ble_label = lv_label_create(output_widgets.ble_box);
