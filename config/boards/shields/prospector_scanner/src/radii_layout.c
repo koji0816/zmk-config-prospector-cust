@@ -240,20 +240,22 @@ static void create_left_panel(lv_obj_t *parent) {
 static void create_modifier_panel(lv_obj_t *parent) {
     const radii_color_palette_t *p = &color_palettes[current_palette];
 
-    /* Modifier panel: Curved bottom layout, 160x40 at BOTTOM mid */
+    /* Modifier panel: At y=190 from top (50px from bottom).
+     * At y=190, circle width is ~2*sqrt(120^2-70^2) = ~193px.
+     * Use width=120px and raise by 15px for safe circular margin. */
     mod_panel = lv_obj_create(parent);
-    lv_obj_set_size(mod_panel, 140, 40);
-    lv_obj_align(mod_panel, LV_ALIGN_BOTTOM_MID, 0, -10);
+    lv_obj_set_size(mod_panel, 120, 36);
+    lv_obj_align(mod_panel, LV_ALIGN_BOTTOM_MID, 0, -18);
     lv_obj_set_style_bg_color(mod_panel, lv_color_hex(p->mod_panel_bg), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(mod_panel, LV_OPA_COVER, LV_PART_MAIN);
-    lv_obj_set_style_radius(mod_panel, 20, LV_PART_MAIN);
+    lv_obj_set_style_radius(mod_panel, 18, LV_PART_MAIN);
     lv_obj_set_style_border_width(mod_panel, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(mod_panel, 0, LV_PART_MAIN);
     lv_obj_clear_flag(mod_panel, LV_OBJ_FLAG_SCROLLABLE);
 
-    /* 1x4 horizontal grid of modifiers */
+    /* 1x4 horizontal grid - icon spacing reduced for narrower panel */
     static const int32_t mod_positions[4][2] = {
-        {10, 4}, {40, 4}, {70, 4}, {100, 4}
+        {4, 2}, {32, 2}, {60, 2}, {88, 2}
     };
     /* Order: CMD (GUI), OPT (ALT), CTRL, SHIFT */
     static const char *mod_symbols[] = {
@@ -296,25 +298,27 @@ static lv_obj_t *create_arc(lv_obj_t *parent, int size, int x, int y, int width)
 static void create_battery_panel(lv_obj_t *parent) {
     const radii_color_palette_t *p = &color_palettes[current_palette];
 
-    /* Battery panel: Curved top layout, 110x36 at TOP mid */
+    /* Battery panel: fits inside circle top curve.
+     * At y=20 from top, circle width is ~2*sqrt(120^2-100^2) = ~133px.
+     * Use width=90px to fit comfortably. */
     bat_panel = lv_obj_create(parent);
-    lv_obj_set_size(bat_panel, 110, 36);
-    lv_obj_align(bat_panel, LV_ALIGN_TOP_MID, 0, 10);
+    lv_obj_set_size(bat_panel, 90, 32);
+    lv_obj_align(bat_panel, LV_ALIGN_TOP_MID, 0, 22);
     lv_obj_set_style_bg_color(bat_panel, lv_color_hex(p->battery_panel_bg), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(bat_panel, LV_OPA_COVER, LV_PART_MAIN);
-    lv_obj_set_style_radius(bat_panel, 18, LV_PART_MAIN);
+    lv_obj_set_style_radius(bat_panel, 16, LV_PART_MAIN);
     lv_obj_set_style_border_width(bat_panel, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(bat_panel, 0, LV_PART_MAIN);
     lv_obj_clear_flag(bat_panel, LV_OBJ_FLAG_SCROLLABLE);
 
-    /* Two battery arcs */
-    int arc_size = 28;
-    int left_pad = 18;
-    int arc_gap = 18;
-    int y_center = (36 - arc_size) / 2;
+    /* Two battery arcs, compacted to fit 90px wide panel */
+    int arc_size = 26;
+    int left_pad = 8;
+    int arc_gap = 12;
+    int y_center = (32 - arc_size) / 2;
 
-    bat_arc_left = create_arc(bat_panel, arc_size, left_pad, y_center, 5);
-    bat_arc_right = create_arc(bat_panel, arc_size, left_pad + arc_size + arc_gap, y_center, 5);
+    bat_arc_left = create_arc(bat_panel, arc_size, left_pad, y_center, 4);
+    bat_arc_right = create_arc(bat_panel, arc_size, left_pad + arc_size + arc_gap, y_center, 4);
 }
 
 /* ========== Update Functions ========== */

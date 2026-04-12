@@ -664,27 +664,31 @@ lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_clear_flag(screen, LV_OBJ_FLAG_SCROLLABLE);
     LOG_INF("[INIT] main_screen created");
 
-    /* ===== 1. Device Name (TOP_MID, y=20) ===== */
+    /* ===== 1. Device Name (TOP_MID, y=50) ===== */
+    /* Circle width at y=50 is ~170px, center it safely */
     LOG_INF("[INIT] Creating device name...");
     device_name_label = lv_label_create(screen);
-    lv_obj_set_style_text_font(device_name_label, &lv_font_unscii_16, 0);
+    lv_obj_set_style_text_font(device_name_label, &lv_font_montserrat_16, 0);
     lv_obj_set_style_text_color(device_name_label, lv_color_white(), 0);
     lv_label_set_text(device_name_label, "Scanning...");
-    lv_obj_align(device_name_label, LV_ALIGN_TOP_MID, 0, 20);
+    lv_label_set_long_mode(device_name_label, LV_LABEL_LONG_CLIP);
+    lv_obj_set_width(device_name_label, 140);
+    lv_obj_set_style_text_align(device_name_label, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_align(device_name_label, LV_ALIGN_TOP_MID, 0, 48);
     LOG_INF("[INIT] device name created");
 
-    /* ===== 2. Scanner Battery (TOP_RIGHT curve) ===== */
-    /* Positioned at x=175, y=30 to fit inside circle radius */
+    /* ===== 2. Scanner Battery (TOP_RIGHT, inside circle) ===== */
+    /* At y=30, safe x is up to ~186. Use right edge at x=195 for icon */
     LOG_INF("[INIT] Creating scanner battery...");
     scanner_bat_icon = lv_label_create(screen);
     lv_obj_set_style_text_font(scanner_bat_icon, &lv_font_montserrat_12, 0);
-    lv_obj_set_pos(scanner_bat_icon, 175, 30);
+    lv_obj_set_pos(scanner_bat_icon, 163, 30);
     lv_label_set_text(scanner_bat_icon, LV_SYMBOL_BATTERY_3);
     lv_obj_set_style_text_color(scanner_bat_icon, lv_color_hex(0x7FFF00), 0);
 
     scanner_bat_pct = lv_label_create(screen);
     lv_obj_set_style_text_font(scanner_bat_pct, &lv_font_unscii_8, 0);
-    lv_obj_set_pos(scanner_bat_pct, 197, 33);
+    lv_obj_set_pos(scanner_bat_pct, 183, 33);
     lv_label_set_text(scanner_bat_pct, "?");
     lv_obj_set_style_text_color(scanner_bat_pct, lv_color_hex(0x7FFF00), 0);
 
@@ -695,95 +699,93 @@ lv_obj_t *zmk_display_status_screen(void) {
     }
     LOG_INF("[INIT] scanner battery created (visible=%d)", ds_battery_visible);
 
-    /* ===== 3. WPM Widget (TOP_LEFT curve) ===== */
-    /* Positioned at x=35, y=30 to fit inside circle radius */
+    /* ===== 3. WPM Widget (TOP_LEFT, inside circle) ===== */
+    /* At y=30, safe x starts from ~54. Use x=55 */
     LOG_INF("[INIT] Creating WPM...");
     wpm_title_label = lv_label_create(screen);
     lv_obj_set_style_text_font(wpm_title_label, &lv_font_unscii_8, 0);
     lv_obj_set_style_text_color(wpm_title_label, lv_color_make(0xA0, 0xA0, 0xA0), 0);
     lv_label_set_text(wpm_title_label, "WPM");
-    lv_obj_set_pos(wpm_title_label, 35, 30);
+    lv_obj_set_pos(wpm_title_label, 55, 30);
 
     wpm_value_label = lv_label_create(screen);
     lv_obj_set_style_text_font(wpm_value_label, &lv_font_montserrat_16, 0);
     lv_obj_set_style_text_color(wpm_value_label, lv_color_white(), 0);
-    lv_obj_set_width(wpm_value_label, 48);
+    lv_obj_set_width(wpm_value_label, 44);
     lv_obj_set_style_text_align(wpm_value_label, LV_TEXT_ALIGN_CENTER, 0);
     lv_label_set_text(wpm_value_label, "0");
-    lv_obj_set_pos(wpm_value_label, 23, 43);
+    lv_obj_set_pos(wpm_value_label, 50, 43);
     LOG_INF("[INIT] WPM created");
 
-    /* ===== 4. Connection Status (CENTER_RIGHT, slightly up) ===== */
+    /* ===== 4. Connection Status (CENTER_RIGHT) ===== */
     LOG_INF("[INIT] Creating connection status...");
     transport_label = lv_label_create(screen);
     lv_obj_set_style_text_font(transport_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(transport_label, lv_color_white(), 0);
     lv_obj_set_style_text_align(transport_label, LV_TEXT_ALIGN_RIGHT, 0);
     lv_label_set_recolor(transport_label, true);
-    lv_obj_align(transport_label, LV_ALIGN_TOP_RIGHT, -15, 60);
-
-    /* Initial state: BLE with profile on new line */
+    /* At y~70-90, safe x up to ~213. Right-align at x=205 */
+    lv_obj_align(transport_label, LV_ALIGN_TOP_RIGHT, -30, 68);
     lv_label_set_text(transport_label, "#ffffff BLE#\n#ffffff 0#");
 
-    /* Profile label kept but hidden (integrated into transport_label) */
     ble_profile_label = lv_label_create(screen);
     lv_obj_set_style_text_font(ble_profile_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(ble_profile_label, lv_color_white(), 0);
     lv_label_set_text(ble_profile_label, "");
-    lv_obj_align(ble_profile_label, LV_ALIGN_TOP_RIGHT, -15, 85);
+    lv_obj_align(ble_profile_label, LV_ALIGN_TOP_RIGHT, -30, 92);
     LOG_INF("[INIT] connection status created");
 
-    /* ===== 5. Layer Widget (CENTER area, y=75-110) ===== */
+    /* ===== 5. Layer Widget (CENTER, y=100) ===== */
     LOG_INF("[INIT] Creating layer widget...");
     layer_title_label = lv_label_create(screen);
     lv_obj_set_style_text_font(layer_title_label, &lv_font_montserrat_16, 0);
     lv_obj_set_style_text_color(layer_title_label, lv_color_make(160, 160, 160), 0);
     lv_obj_set_style_text_opa(layer_title_label, LV_OPA_70, 0);
     lv_label_set_text(layer_title_label, "Layer");
-    lv_obj_align(layer_title_label, LV_ALIGN_TOP_MID, 0, 72);
+    lv_obj_align(layer_title_label, LV_ALIGN_TOP_MID, 0, 100);
 
-    /* Create layer display - slide mode OR fixed mode (list/over-max) */
+    /* Create layer display */
     if (ds_layer_slide_mode) {
-        create_layer_slide_widgets(screen, 95);
+        create_layer_slide_widgets(screen, 118);
         layer_mode_over_max = false;
     } else if (active_layer >= ds_max_layers) {
         layer_mode_over_max = true;
-        create_over_max_widget(screen, active_layer, 95);
+        create_over_max_widget(screen, active_layer, 118);
     } else {
         layer_mode_over_max = false;
-        create_layer_list_widgets(screen, 95);
+        create_layer_list_widgets(screen, 118);
     }
     LOG_INF("[INIT] layer widget created");
 
-    /* ===== 6. Modifier Widget (CENTER, y=135) - NerdFont icons ===== */
+    /* ===== 6. Modifier Widget (CENTER, y=155) - NerdFont icons ===== */
     LOG_INF("[INIT] Creating modifier widget with NerdFont...");
     modifier_label = lv_label_create(screen);
     lv_obj_set_style_text_font(modifier_label, &NerdFonts_Regular_40, 0);
     lv_obj_set_style_text_color(modifier_label, lv_color_white(), 0);
-    lv_obj_set_style_text_letter_space(modifier_label, 10, 0);
+    lv_obj_set_style_text_letter_space(modifier_label, 6, 0);
     lv_label_set_text(modifier_label, "");
-    lv_obj_align(modifier_label, LV_ALIGN_TOP_MID, 0, 135);
+    lv_obj_align(modifier_label, LV_ALIGN_TOP_MID, 0, 155);
     LOG_INF("[INIT] modifier widget created");
 
-    /* ===== 7. Keyboard Battery (dynamic layout for 1-4 batteries) ===== */
+    /* ===== 7. Keyboard Battery (bottom area, fit in circle) ===== */
     LOG_INF("[INIT] Creating keyboard battery widgets...");
 
-    /* Compressed position constants to fit inside circular bottom */
+    /* Circle at y=190: width ~193px → max bar range x:24~216
+     * Keep bars narrower and higher up for safety */
     #define KB_BAR_HEIGHT      4
-    #define KB_BAR_Y_OFFSET    -50    
-    #define KB_PCT_Y_OFFSET    -58    
-    #define KB_NAME_X_OFFSET   0      
+    #define KB_BAR_Y_OFFSET    -42
+    #define KB_PCT_Y_OFFSET    -52
+    #define KB_NAME_X_OFFSET   0
 
-    #define KB_BAR_WIDTH_1     140
-    #define KB_BAR_WIDTH_2     80
-    #define KB_BAR_WIDTH_3     50
-    #define KB_BAR_WIDTH_4     40
+    #define KB_BAR_WIDTH_1     130
+    #define KB_BAR_WIDTH_2     75
+    #define KB_BAR_WIDTH_3     46
+    #define KB_BAR_WIDTH_4     36
 
-    /* Compressed X offsets */
     static const int16_t kb_x_offsets_1[] = {0};
-    static const int16_t kb_x_offsets_2[] = {-50, 50};
-    static const int16_t kb_x_offsets_3[] = {-65, 0, 65};
-    static const int16_t kb_x_offsets_4[] = {-80, -25, 25, 80};
+    static const int16_t kb_x_offsets_2[] = {-45, 45};
+    static const int16_t kb_x_offsets_3[] = {-55, 0, 55};
+    static const int16_t kb_x_offsets_4[] = {-63, -20, 20, 63};
 
     /* Create all 4 battery slot widgets (initially hidden) */
     for (int i = 0; i < MAX_KB_BATTERIES; i++) {
@@ -847,24 +849,25 @@ lv_obj_t *zmk_display_status_screen(void) {
 
     LOG_INF("[INIT] keyboard battery widgets created (4 slots)");
 
-    /* ===== 8. Signal Status (BOTTOM, y=200) ===== */
+    /* ===== 8. Signal Status (BOTTOM, y=193) ===== */
+    /* Circle at y=193: width ~2*sqrt(120^2-73^2)=~190px, safe x:25~215 */
     LOG_INF("[INIT] Creating signal status...");
 
     channel_label = lv_label_create(screen);
     lv_obj_set_style_text_font(channel_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(channel_label, lv_color_make(0x80, 0x80, 0x80), 0);
     lv_label_set_text(channel_label, "Ch:0");
-    lv_obj_set_pos(channel_label, 50, 203);  
+    lv_obj_set_pos(channel_label, 35, 193);
 
     rx_title_label = lv_label_create(screen);
     lv_obj_set_style_text_font(rx_title_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(rx_title_label, lv_color_make(0x80, 0x80, 0x80), 0);
     lv_label_set_text(rx_title_label, "RX:");
-    lv_obj_set_pos(rx_title_label, 85, 203);  
+    lv_obj_set_pos(rx_title_label, 82, 193);
 
     rssi_bar = lv_bar_create(screen);
-    lv_obj_set_size(rssi_bar, 30, 8);
-    lv_obj_set_pos(rssi_bar, 110, 207);  
+    lv_obj_set_size(rssi_bar, 28, 8);
+    lv_obj_set_pos(rssi_bar, 111, 197);
     lv_bar_set_range(rssi_bar, 0, 5);
     lv_bar_set_value(rssi_bar, 0, LV_ANIM_OFF);
     lv_obj_set_style_bg_color(rssi_bar, lv_color_make(0x20, 0x20, 0x20), LV_PART_MAIN);
@@ -878,13 +881,13 @@ lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_set_style_text_font(rssi_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(rssi_label, lv_color_make(0xA0, 0xA0, 0xA0), 0);
     lv_label_set_text(rssi_label, "0dBm");
-    lv_obj_set_pos(rssi_label, 145, 203);  
+    lv_obj_set_pos(rssi_label, 143, 193);
 
     rate_label = lv_label_create(screen);
     lv_obj_set_style_text_font(rate_label, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(rate_label, lv_color_make(0xA0, 0xA0, 0xA0), 0);
     lv_label_set_text(rate_label, "0.0Hz");
-    lv_obj_set_pos(rate_label, 185, 203);  
+    lv_obj_set_pos(rate_label, 178, 193);
     LOG_INF("[INIT] signal status created");
 
     LOG_INF("=============================================");
