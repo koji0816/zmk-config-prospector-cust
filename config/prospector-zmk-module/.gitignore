@@ -32,6 +32,9 @@ test/**/.west/
 # Zephyr/West artifacts
 modules/
 tools/
-zephyr/
 bootloader/
 zmk/
+
+# Ignore zephyr build artifacts but allow module.yml
+zephyr/*
+!zephyr/module.yml
