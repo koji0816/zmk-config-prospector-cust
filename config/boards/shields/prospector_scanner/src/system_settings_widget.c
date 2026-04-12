@@ -172,8 +172,9 @@ static lv_obj_t *create_styled_button(lv_obj_t *parent, const char *text,
         return NULL;
     }
 
-    // Set button size and position
-    lv_obj_set_size(btn, 200, 60);
+    /* Buttons are centered (x_offset=0→ x:20-220). For circle:
+     * At y=center, full width is fine. 160px wide centered = x:40-200 (safe). */
+    lv_obj_set_size(btn, 160, 50);
     lv_obj_align(btn, LV_ALIGN_CENTER, x_offset, y_offset);
 
     // Style: Normal state (LV_STATE_DEFAULT)
@@ -235,15 +236,16 @@ int zmk_widget_system_settings_init(struct zmk_widget_system_settings *widget, l
     widget->title_label = lv_label_create(widget->obj);
     lv_label_set_text(widget->title_label, "Quick Actions");
     lv_obj_set_style_text_color(widget->title_label, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(widget->title_label, &lv_font_montserrat_20, LV_STATE_DEFAULT);
-    lv_obj_align(widget->title_label, LV_ALIGN_TOP_MID, 0, 15);
+    lv_obj_set_style_text_font(widget->title_label, &lv_font_montserrat_16, LV_STATE_DEFAULT);
+    /* At y=38, circle width ~2*sqrt(120^2-82^2)=~186px. 180px text is fine. */
+    lv_obj_align(widget->title_label, LV_ALIGN_TOP_MID, 0, 38);
 
     // Version label (below title)
     lv_obj_t *version_label = lv_label_create(widget->obj);
     lv_label_set_text(version_label, "v2.2b");
     lv_obj_set_style_text_color(version_label, lv_color_hex(0x888888), LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(version_label, &lv_font_montserrat_12, LV_STATE_DEFAULT);
-    lv_obj_align(version_label, LV_ALIGN_TOP_MID, 0, 40);
+    lv_obj_align(version_label, LV_ALIGN_TOP_MID, 0, 58);
 
     LOG_INF("✅ Title and version labels created");
 
@@ -254,7 +256,7 @@ int zmk_widget_system_settings_init(struct zmk_widget_system_settings *widget, l
         "Enter Bootloader",
         lv_color_hex(0x4A90E2),  // Normal: Sky blue
         lv_color_hex(0x357ABD),  // Pressed: Darker blue
-        0, -15  // Y: -5→-15 (moved up)
+        0, -20   /* At y=100 center, circle is fully open */
     );
 
     if (!widget->bootloader_btn) {
@@ -275,7 +277,7 @@ int zmk_widget_system_settings_init(struct zmk_widget_system_settings *widget, l
         "System Reset",
         lv_color_hex(0xE24A4A),  // Normal: Soft red
         lv_color_hex(0xC93A3A),  // Pressed: Darker red
-        0, 55   // Y: 65→55 (moved up)
+        0, 35   /* 55px gap from bootloader button */
     );
 
     if (!widget->reset_btn) {
@@ -292,26 +294,27 @@ int zmk_widget_system_settings_init(struct zmk_widget_system_settings *widget, l
     // ========== Channel Selector UI ==========
     LOG_INF("Creating Channel selector...");
 
-    // Channel label
+    /* Channel selector - raised to y=-25 area so it's inside circle bottom.
+     * At y=195 (BOTTOM_MID-25), circle width~2*sqrt(120^2-75^2)=~193px. */
     widget->channel_label = lv_label_create(widget->obj);
-    lv_label_set_text(widget->channel_label, "Channel:");
+    lv_label_set_text(widget->channel_label, "Ch:");
     lv_obj_set_style_text_color(widget->channel_label, lv_color_hex(0xAAAAAA), LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(widget->channel_label, &lv_font_montserrat_16, LV_STATE_DEFAULT);
-    lv_obj_align(widget->channel_label, LV_ALIGN_BOTTOM_MID, -60, -50);
+    lv_obj_align(widget->channel_label, LV_ALIGN_BOTTOM_MID, -50, -30);
 
     // Channel value display
     widget->channel_value = lv_label_create(widget->obj);
     lv_obj_set_style_text_color(widget->channel_value, lv_color_hex(0x4A90E2), LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(widget->channel_value, &lv_font_montserrat_20, LV_STATE_DEFAULT);
-    lv_obj_set_width(widget->channel_value, 50);
+    lv_obj_set_width(widget->channel_value, 40);
     lv_obj_set_style_text_align(widget->channel_value, LV_TEXT_ALIGN_CENTER, LV_STATE_DEFAULT);
-    lv_obj_align(widget->channel_value, LV_ALIGN_BOTTOM_MID, 15, -48);
-    update_channel_value_display(widget);  // Set initial value
+    lv_obj_align(widget->channel_value, LV_ALIGN_BOTTOM_MID, 10, -28);
+    update_channel_value_display(widget);
 
-    // Left arrow button (decrease channel)
+    // Left arrow button
     widget->channel_left_btn = lv_btn_create(widget->obj);
-    lv_obj_set_size(widget->channel_left_btn, 40, 32);
-    lv_obj_align(widget->channel_left_btn, LV_ALIGN_BOTTOM_MID, -25, -45);
+    lv_obj_set_size(widget->channel_left_btn, 36, 28);
+    lv_obj_align(widget->channel_left_btn, LV_ALIGN_BOTTOM_MID, -22, -27);
     lv_obj_set_style_bg_color(widget->channel_left_btn, lv_color_hex(0x333333), LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(widget->channel_left_btn, lv_color_hex(0x555555), LV_STATE_PRESSED);
     lv_obj_set_style_radius(widget->channel_left_btn, 6, LV_STATE_DEFAULT);
@@ -323,10 +326,10 @@ int zmk_widget_system_settings_init(struct zmk_widget_system_settings *widget, l
 
     lv_obj_add_event_cb(widget->channel_left_btn, channel_left_btn_event_cb, LV_EVENT_ALL, widget);
 
-    // Right arrow button (increase channel)
+    // Right arrow button
     widget->channel_right_btn = lv_btn_create(widget->obj);
-    lv_obj_set_size(widget->channel_right_btn, 40, 32);
-    lv_obj_align(widget->channel_right_btn, LV_ALIGN_BOTTOM_MID, 55, -45);
+    lv_obj_set_size(widget->channel_right_btn, 36, 28);
+    lv_obj_align(widget->channel_right_btn, LV_ALIGN_BOTTOM_MID, 48, -27);
     lv_obj_set_style_bg_color(widget->channel_right_btn, lv_color_hex(0x333333), LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(widget->channel_right_btn, lv_color_hex(0x555555), LV_STATE_PRESSED);
     lv_obj_set_style_radius(widget->channel_right_btn, 6, LV_STATE_DEFAULT);

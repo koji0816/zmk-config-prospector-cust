@@ -23,15 +23,19 @@ LOG_MODULE_REGISTER(field_layout, CONFIG_ZMK_LOG_LEVEL);
 
 /* ========== Grid Configuration (from carrefinho) ========== */
 
-#define GRID_COLS 8
+#define GRID_COLS 7
 #define GRID_ROWS 6
-#define GRID_TOTAL (GRID_COLS * GRID_ROWS)  /* 48 */
+#define GRID_TOTAL (GRID_COLS * GRID_ROWS)  /* 42 */
 #define GRID_SPACING 34
 #define LINE_LENGTH 14
 
-/* Grid cell center positions (pre-computed) */
-static const int grid_cx[GRID_COLS] = {18, 52, 86, 120, 154, 188, 222, 256};
-static const int grid_cy[GRID_ROWS] = {18, 52, 86, 120, 154, 188};
+/* Grid cell center positions for 240x240 circle.
+ * 7 cols: start=18, step=34 => 18,52,86,120,154,188,222  (max 222+14=236 < 240 OK)
+ * 6 rows: start=18, step=34 => 18,52,86,120,154,188      (max 188+14=202, within circle)
+ * Circle at y=18: width~2*sqrt(120^2-102^2)=~115px. col0(x=18) is OK if we offset carefully.
+ * Shift grid right by 8px so center col(3) aligns with circle center(120). */
+static const int grid_cx[GRID_COLS] = {10, 44, 78, 112, 146, 180, 214};
+static const int grid_cy[GRID_ROWS] = {20, 54, 88, 122, 156, 190};
 
 /* ========== Animation Parameters (from carrefinho's Kconfig) ========== */
 
@@ -290,8 +294,8 @@ static float lines_noise(float x, float y, float t) {
 static void compute_exclusions(void) {
     excluded_cells = 0;
 
-    /* Layer label: top-left, ~3 cols × 1 row */
-    for (int c = 0; c < 3; c++) {
+    /* Layer label exclusion: top-left, ~2 cols × 1 row */
+    for (int c = 0; c < 2; c++) {
         excluded_cells |= (1ULL << (0 * GRID_COLS + c));
     }
 
@@ -300,13 +304,13 @@ static void compute_exclusions(void) {
         excluded_cells |= (1ULL << (1 * GRID_COLS + c));
     }
 
-    /* Modifier labels: rightmost column, rows 2-5 */
+    /* Modifier labels: rightmost column (col 6), rows 2-5 */
     for (int r = 2; r < GRID_ROWS; r++) {
         excluded_cells |= (1ULL << (r * GRID_COLS + (GRID_COLS - 1)));
     }
 
-    /* Battery label: bottom-left, ~3 cols */
-    for (int c = 0; c < 3; c++) {
+    /* Battery label: bottom-left, ~2 cols */
+    for (int c = 0; c < 2; c++) {
         excluded_cells |= (1ULL << ((GRID_ROWS - 1) * GRID_COLS + c));
     }
 }
@@ -472,26 +476,26 @@ static void animation_timer_cb(lv_timer_t *timer) {
 static void create_labels(lv_obj_t *parent) {
     const field_color_palette_t *p = &color_palettes[current_palette];
 
-    /* Layer name label (top-left) - FR_Regular_36 */
+    /* Layer name label (top-left) - moved right to clear circle edge */
     layer_label = lv_label_create(parent);
     lv_obj_set_style_text_font(layer_label, &FR_Regular_36, LV_PART_MAIN);
     lv_obj_set_style_text_color(layer_label, lv_color_hex(p->layer_text), LV_PART_MAIN);
-    lv_obj_set_pos(layer_label, 9, 14);
+    lv_obj_set_pos(layer_label, 20, 16);
     lv_label_set_text(layer_label, "BASE");
 
-    /* Output indicator (BLE profile, below layer) - FG_Medium_26 */
+    /* Output indicator (BLE profile, below layer) */
     output_label = lv_label_create(parent);
     lv_obj_set_style_text_font(output_label, &FG_Medium_26, LV_PART_MAIN);
     lv_obj_set_style_text_color(output_label, lv_color_hex(p->output_inactive), LV_PART_MAIN);
-    lv_obj_set_pos(output_label, 9, 52);
+    lv_obj_set_pos(output_label, 20, 52);
     lv_label_set_text(output_label, "");
 
-    /* Battery label (bottom-left) - FR_Regular_30 */
+    /* Battery label (bottom-left) - raised for circle edge safety */
     battery_label = lv_label_create(parent);
     lv_obj_set_style_text_font(battery_label, &FR_Regular_30, LV_PART_MAIN);
     lv_obj_set_style_text_color(battery_label, lv_color_hex(p->battery_text), LV_PART_MAIN);
     lv_obj_set_style_text_letter_space(battery_label, -1, LV_PART_MAIN);
-    lv_obj_align(battery_label, LV_ALIGN_BOTTOM_LEFT, 9, -20);
+    lv_obj_align(battery_label, LV_ALIGN_BOTTOM_LEFT, 20, -28);
     lv_label_set_text(battery_label, "-/-");
 }
 
@@ -630,7 +634,7 @@ lv_obj_t *field_layout_create(lv_obj_t *parent) {
     init_lut();
 
     layout_container = lv_obj_create(parent);
-    lv_obj_set_size(layout_container, 280, 240);
+    lv_obj_set_size(layout_container, 240, 240);  /* Fit 240x240 circle */
     lv_obj_set_pos(layout_container, 0, 0);
     lv_obj_set_style_bg_color(layout_container,
         lv_color_hex(color_palettes[current_palette].background), LV_PART_MAIN);
@@ -667,7 +671,7 @@ lv_obj_t *field_layout_create(lv_obj_t *parent) {
 
     /* Create custom draw object for lines (transparent, full size) */
     line_canvas_obj = lv_obj_create(layout_container);
-    lv_obj_set_size(line_canvas_obj, 274, 206);
+    lv_obj_set_size(line_canvas_obj, 230, 200);  /* Fit within 240x240 circle */
     lv_obj_align(line_canvas_obj, LV_ALIGN_CENTER, 0, 0);
     lv_obj_set_style_bg_opa(line_canvas_obj, LV_OPA_TRANSP, LV_PART_MAIN);
     lv_obj_set_style_border_width(line_canvas_obj, 0, LV_PART_MAIN);
