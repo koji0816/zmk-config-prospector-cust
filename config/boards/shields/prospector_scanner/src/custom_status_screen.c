@@ -21,6 +21,8 @@
 #include <zephyr/sys/reboot.h>
 #include <zephyr/retention/bootmode.h>  /* For bootmode_set() - Zephyr 4.x bootloader entry */
 #include <zephyr/drivers/led.h>  /* For PWM backlight control */
+#include <zephyr/device.h>
+#include <zephyr/drivers/display.h>
 #include <string.h>
 #include <lvgl.h>
 #include <zmk/display.h>
@@ -654,15 +656,35 @@ lv_obj_t *zmk_display_status_screen(void) {
     load_display_settings();
 
     /* Set display rotation so Type-C is at the bottom (270 degree rotation from native 90-degree-right) */
+    {
+        /* 1. Try Hardware Rotation via Zephyr Display API first */
+        const struct device *display_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_display));
+        int hw_err = -ENOTSUP;
+        if (device_is_ready(display_dev)) {
+            hw_err = display_set_orientation(display_dev, DISPLAY_ORIENTATION_ROTATED_270);
+            LOG_INF("Zephyr hardware rotation to 270 returned %d", hw_err);
+        }
+
+        /* 2. Configure LVGL software rotation as fallback if HW rotation failed */
+        if (hw_err != 0) {
 #if LVGL_VERSION_MAJOR >= 9
-    if (lv_display_get_default()) {
-        lv_display_set_rotation(lv_display_get_default(), LV_DISPLAY_ROTATION_270);
-    }
+            lv_display_t *disp = lv_display_get_default();
+            if (disp) {
+                lv_display_set_rotation(disp, LV_DISPLAY_ROTATION_270);
+                LOG_INF("LVGL 9 software rotation applied");
+            }
 #else
-    if (lv_disp_get_default()) {
-        lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_270);
-    }
+            lv_disp_t *disp = lv_disp_get_default();
+            if (disp) {
+                if (disp->driver) {
+                    disp->driver->sw_rotate = 1;  /* Force LVGL internal sw rotation buffer */
+                }
+                lv_disp_set_rotation(disp, LV_DISP_ROT_270);
+                LOG_INF("LVGL 8 software rotation applied (sw_rotate forced)");
+            }
 #endif
+        }
+    }
 
     /* Create main screen */
     LOG_INF("[INIT] Creating main_screen...");
