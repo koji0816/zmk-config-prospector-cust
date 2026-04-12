@@ -12,6 +12,11 @@
     status = "disabled";
 };
 
+/* 元のタッチセンサーのリセットピン（D1）が新しいディスプレイのCSピンと被るため無効化 */
+&touch_sensor {
+    status = "disabled";
+};
+
 /* * SPIバスの管理枠を2つに増やします。
  * [0] = 元のディスプレイ用 (ダミーとして残す)
  * [1] = 新しい丸型ディスプレイ用 (CSピン = D1)
@@ -23,6 +28,9 @@
 
 /* ディスプレイの通信バス（MIPI-DBI）の設定を上書き */
 &{/mipi_dbi} {
+    /* SPI通信のデバイスを xiao_spi (デフォルトSPI2) に向けるように変更 */
+    spi-dev = <&xiao_spi>;
+
     /* XIAO Round Display の DCピン(D3) に変更 */
     dc-gpios = <&xiao_d 3 GPIO_ACTIVE_HIGH>;
     /* D3ピンが元のリセットピン設定と被るのを防ぐため、リセット設定を消去 */
