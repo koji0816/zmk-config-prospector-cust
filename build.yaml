@@ -1,10 +1,5 @@
 ---
 include:
-  # Scanner - Non-Touch Mode (display only, no swipe navigation)
-  - board: xiao_ble//zmk
-    shield: prospector_scanner
-    artifact-name: prospector_scanner
-
   # Scanner - Touch Mode (swipe navigation + settings screens)
   - board: xiao_ble//zmk
     shield: prospector_scanner
