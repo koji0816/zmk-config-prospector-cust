@@ -52,30 +52,30 @@ typedef struct {
 
 /* ========== 4 Color Palettes ========== */
 static const operator_color_palette_t color_palettes[4] = {
-    /* Teal Theme (default - carrefinho original) */
+    /* Teal Theme (default - modernized cool blue) */
     {
-        .mod_active = 0xb1e5f0,      /* Light cyan */
-        .mod_inactive = 0x3b527c,    /* Dark blue */
-        .mod_separator = 0x606060,
-        .wpm_bar_active = 0xc2526a,  /* Pink/magenta */
-        .wpm_bar_inactive = 0x242424,
-        .wpm_text = 0xc2526a,
-        .layer_text = 0xffffff,
-        .layer_dot_active = 0xe0e0e0,
-        .layer_dot_inactive = 0x575757,
-        .battery_fill = 0x54806c,    /* Teal green */
-        .battery_ring = 0x2a4036,
-        .battery_label = 0xffffff,
-        .battery_low_fill = 0xC08040,
-        .battery_low_ring = 0x584028,
-        .usb_active_bg = 0xb9b9a7,   /* Beige */
-        .usb_inactive_bg = 0x4F4F40,
-        .ble_active_bg = 0x569FA7,   /* Teal */
-        .ble_inactive_bg = 0x353f40,
+        .mod_active = 0x80DEEA,      /* Cyan */
+        .mod_inactive = 0x1B3A4B,    /* Dark navy */
+        .mod_separator = 0x37474F,
+        .wpm_bar_active = 0x4FC3F7,  /* Accent blue */
+        .wpm_bar_inactive = 0x0D1B2A,
+        .wpm_text = 0x4FC3F7,
+        .layer_text = 0xECEFF1,
+        .layer_dot_active = 0x4DD0E1,
+        .layer_dot_inactive = 0x37474F,
+        .battery_fill = 0x4DB6AC,    /* Teal */
+        .battery_ring = 0x1B3A4B,
+        .battery_label = 0xECEFF1,
+        .battery_low_fill = 0xFFA726,
+        .battery_low_ring = 0x4A2800,
+        .usb_active_bg = 0x90A4AE,   /* Blue-grey */
+        .usb_inactive_bg = 0x263238,
+        .ble_active_bg = 0x4DD0E1,   /* Cyan */
+        .ble_inactive_bg = 0x1B2838,
         .output_active_text = 0x000000,
-        .output_inactive_text = 0x7b7d93,
-        .slot_active_bg = 0x7b7d93,
-        .slot_inactive_bg = 0x353640,
+        .output_inactive_text = 0x546E7A,
+        .slot_active_bg = 0x78909C,
+        .slot_inactive_bg = 0x1B2838,
         .name = "Teal"
     },
     /* Warm Theme - Orange/Amber tones */
@@ -130,30 +130,30 @@ static const operator_color_palette_t color_palettes[4] = {
         .slot_inactive_bg = 0x353045,
         .name = "Purple"
     },
-    /* Mono Theme - Grayscale with cyan accent */
+    /* Mono Theme - Deep blue-grey with cyan accent */
     {
-        .mod_active = 0x00FFFF,      /* Cyan accent */
-        .mod_inactive = 0x606060,    /* Gray */
-        .mod_separator = 0x404040,
-        .wpm_bar_active = 0x00CCCC,  /* Dark cyan */
-        .wpm_bar_inactive = 0x1A1A1A,
-        .wpm_text = 0x00CCCC,
-        .layer_text = 0xE0E0E0,      /* Light gray */
-        .layer_dot_active = 0xFFFFFF,
-        .layer_dot_inactive = 0x404040,
-        .battery_fill = 0x808080,    /* Gray */
-        .battery_ring = 0x404040,
-        .battery_label = 0xffffff,
-        .battery_low_fill = 0xCC4444,
-        .battery_low_ring = 0x662222,
-        .usb_active_bg = 0xA0A0A0,   /* Light gray */
-        .usb_inactive_bg = 0x404040,
-        .ble_active_bg = 0x00AAAA,   /* Teal accent */
-        .ble_inactive_bg = 0x303030,
+        .mod_active = 0x4FC3F7,      /* Light blue accent */
+        .mod_inactive = 0x37474F,    /* Blue-grey */
+        .mod_separator = 0x263238,
+        .wpm_bar_active = 0x00BCD4,  /* Cyan */
+        .wpm_bar_inactive = 0x0D1B2A,
+        .wpm_text = 0x00BCD4,
+        .layer_text = 0xECEFF1,      /* Blue-white */
+        .layer_dot_active = 0xECEFF1,
+        .layer_dot_inactive = 0x37474F,
+        .battery_fill = 0x78909C,    /* Blue-grey */
+        .battery_ring = 0x263238,
+        .battery_label = 0xECEFF1,
+        .battery_low_fill = 0xEF5350,
+        .battery_low_ring = 0x6D1B2A,
+        .usb_active_bg = 0x90A4AE,
+        .usb_inactive_bg = 0x263238,
+        .ble_active_bg = 0x00ACC1,
+        .ble_inactive_bg = 0x1B2838,
         .output_active_text = 0x000000,
-        .output_inactive_text = 0x808080,
-        .slot_active_bg = 0x707070,
-        .slot_inactive_bg = 0x303030,
+        .output_inactive_text = 0x546E7A,
+        .slot_active_bg = 0x546E7A,
+        .slot_inactive_bg = 0x1B2838,
         .name = "Mono"
     }
 };

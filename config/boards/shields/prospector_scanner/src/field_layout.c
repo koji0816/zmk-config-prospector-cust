@@ -135,27 +135,27 @@ typedef struct {
 } field_color_palette_t;
 
 static const field_color_palette_t color_palettes[4] = {
-    /* White (default - original carrefinho) */
+    /* Ice Blue (default - modernized cool) */
     {
-        .line_color = 0xFFFFFF,
-        .layer_text = 0xFFFFFF,
-        .battery_text = 0xFFFFFF,
-        .mod_active = 0xFFFFFF,
-        .mod_inactive = 0x404040,
-        .output_active = 0x00FFFF,
-        .output_inactive = 0x454545,
+        .line_color = 0xECEFF1,      /* Blue-white */
+        .layer_text = 0xECEFF1,
+        .battery_text = 0xB0BEC5,    /* Light blue-grey */
+        .mod_active = 0xECEFF1,
+        .mod_inactive = 0x263238,     /* Dark blue-grey */
+        .output_active = 0x4FC3F7,   /* Accent blue */
+        .output_inactive = 0x37474F,
         .background = 0x000000,
-        .name = "White"
+        .name = "Ice Blue"
     },
-    /* Cyan */
+    /* Deep Cyan */
     {
-        .line_color = 0x00FFFF,
-        .layer_text = 0x00FFFF,
-        .battery_text = 0x80FFFF,
-        .mod_active = 0x00FFFF,
-        .mod_inactive = 0x004040,
-        .output_active = 0x00FF80,
-        .output_inactive = 0x303030,
+        .line_color = 0x4DD0E1,      /* Cyan */
+        .layer_text = 0x80DEEA,
+        .battery_text = 0x80DEEA,
+        .mod_active = 0x4DD0E1,
+        .mod_inactive = 0x0D1B2A,     /* Deep navy */
+        .output_active = 0x4DB6AC,    /* Teal */
+        .output_inactive = 0x1B2838,
         .background = 0x000000,
         .name = "Cyan"
     },

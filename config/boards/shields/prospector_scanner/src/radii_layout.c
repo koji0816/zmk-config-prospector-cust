@@ -46,17 +46,17 @@ typedef struct {
 
 /* ========== 4 Color Palettes (from carrefinho's device tree themes) ========== */
 static const radii_color_palette_t color_palettes[4] = {
-    /* Blue Theme (default) */
+    /* Blue Theme (default - modernized cool) */
     {
-        .left_panel_bg = 0xACB9D3,    /* Light blue-gray */
-        .mod_panel_bg = 0x1448AA,     /* Blue */
-        .battery_panel_bg = 0xE2FF61, /* Yellow-green */
-        .arc_bg = 0xA8BF41,           /* Green */
-        .arc_indicator = 0x576610,    /* Dark green */
-        .layer_wheel = 0x000000,      /* Black */
-        .layer_text = 0x000000,       /* Black */
-        .mod_active = 0x61E7FF,       /* Cyan */
-        .mod_inactive = 0x0C2B65,     /* Dark blue */
+        .left_panel_bg = 0x90A4AE,    /* Blue-grey */
+        .mod_panel_bg = 0x0277BD,     /* Deep blue */
+        .battery_panel_bg = 0x4DD0E1, /* Cyan */
+        .arc_bg = 0x1B3A4B,           /* Dark navy */
+        .arc_indicator = 0x4FC3F7,    /* Accent blue */
+        .layer_wheel = 0x0D1B2A,      /* Deep navy */
+        .layer_text = 0x0D1B2A,       /* Deep navy */
+        .mod_active = 0x80DEEA,       /* Light cyan */
+        .mod_inactive = 0x0D1B2A,     /* Deep navy */
         .name = "Blue"
     },
     /* Green Theme */
@@ -85,17 +85,17 @@ static const radii_color_palette_t color_palettes[4] = {
         .mod_inactive = 0x4A2A3A,     /* Dark maroon */
         .name = "Red"
     },
-    /* Purple Theme */
+    /* Purple Theme (cool blue-violet) */
     {
-        .left_panel_bg = 0x212121,    /* Dark gray */
-        .mod_panel_bg = 0x858585,     /* Gray */
-        .battery_panel_bg = 0x8774B4, /* Purple */
-        .arc_bg = 0x6654A4,           /* Dark purple */
-        .arc_indicator = 0xAA99CC,    /* Light purple */
-        .layer_wheel = 0xFFFFFF,      /* White */
-        .layer_text = 0xFFFFFF,       /* White */
-        .mod_active = 0x38FFB3,       /* Mint green */
-        .mod_inactive = 0x444444,     /* Dark gray */
+        .left_panel_bg = 0x1B2838,    /* Dark navy-grey */
+        .mod_panel_bg = 0x5C6BC0,     /* Indigo */
+        .battery_panel_bg = 0x7E57C2, /* Deep purple */
+        .arc_bg = 0x311B92,           /* Dark indigo */
+        .arc_indicator = 0xB39DDB,    /* Light purple */
+        .layer_wheel = 0xECEFF1,      /* Blue-white */
+        .layer_text = 0xECEFF1,       /* Blue-white */
+        .mod_active = 0x80CBC4,       /* Teal-mint */
+        .mod_inactive = 0x1A237E,     /* Deep indigo */
         .name = "Purple"
     }
 };
