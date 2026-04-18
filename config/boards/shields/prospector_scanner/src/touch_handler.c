@@ -201,10 +201,11 @@ static void touch_input_callback(struct input_event *evt, void *user_data) {
                     int16_t raw_dx = current_x - swipe_state.start_x;
                     int16_t raw_dy = current_y - swipe_state.start_y;
 
-                    // TEMPORARY MAPPING FOR DIAGNOSTICS:
-                    // We map physical X directly to logical X, and physical Y to logical Y
-                    int16_t dx = raw_dx;   // physical X
-                    int16_t dy = raw_dy;   // physical Y
+                    // COORDINATE TRANSFORM: 
+                    // User tested 1:1 mapping and found BOTH axes were inverted (180 degree rotation).
+                    // Swipe directions are mapped accordingly:
+                    int16_t dx = -raw_dx;  // Invert X
+                    int16_t dy = -raw_dy;  // Invert Y
 
                     int16_t abs_dx = (dx < 0) ? -dx : dx;
                     int16_t abs_dy = (dy < 0) ? -dy : dy;
@@ -263,9 +264,9 @@ INPUT_CALLBACK_DEFINE(DEVICE_DT_GET(TOUCH_NODE), touch_input_callback, NULL);
 static void lvgl_input_read(lv_indev_t *indev, lv_indev_data_t *data) {
     ARG_UNUSED(indev);
 
-    // TEMPORARY DIAGNOSTIC MAPPING: X maps to X, Y maps to Y
-    int32_t logical_x = (int32_t)current_x;
-    int32_t logical_y = (int32_t)current_y;
+    // Apply 180° rotation transform (Both axes inverted based on user testing)
+    int32_t logical_x = 239 - (int32_t)current_x;
+    int32_t logical_y = 239 - (int32_t)current_y;
 
     // Clamp to 240x240 valid range
     if (logical_x < 0) logical_x = 0;
