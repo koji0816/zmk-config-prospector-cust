@@ -206,7 +206,8 @@ static void touch_input_callback(struct input_event *evt, void *user_data) {
                     //   Physical DOWN (raw_dy>0) → Display/Swipe LEFT (dx<0)
                     //   Physical LEFT  (raw_dx<0) → Display/Swipe UP (dy<0)
                     //   Physical RIGHT (raw_dx>0) → Display/Swipe DOWN (dy>0)
-                    int16_t dx = raw_dy;   // physical Y → LVGL X swipe
+                    // Note: User reported swipe left/right was reversed, so inverting dx here
+                    int16_t dx = -raw_dy;  // physical Y → LVGL X swipe (inverted for gesture)
                     int16_t dy = -raw_dx;  // physical X (inverted) → LVGL Y swipe
 
                     int16_t abs_dx = (dx < 0) ? -dx : dx;
