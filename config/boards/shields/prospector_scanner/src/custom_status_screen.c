@@ -729,7 +729,7 @@ lv_obj_t *zmk_display_status_screen(void) {
     lv_label_set_recolor(transport_label, true);
     /* At y~70-90, safe x up to ~213. Right-align at x=205 */
     lv_obj_align(transport_label, LV_ALIGN_TOP_RIGHT, -30, 68);
-    lv_label_set_text(transport_label, "#ffffff BLE#\n#ffffff 0#");
+    lv_label_set_text(transport_label, "#ECeff1 BLE#\n#ECeff1 0#");
 
     ble_profile_label = lv_label_create(screen);
     lv_obj_set_style_text_font(ble_profile_label, &lv_font_montserrat_12, 0);
@@ -1552,7 +1552,7 @@ void display_update_connection(bool usb_rdy, bool ble_conn, bool ble_bond, int p
         /* Exclusive display: USB or BLE (not both) */
         if (usb_ready) {
             /* USB connected - show USB only */
-            snprintf(stbuf_transport, sizeof(stbuf_transport), "#ffffff USB#");
+            snprintf(stbuf_transport, sizeof(stbuf_transport), "#ECeff1 USB#");
         } else {
             /* USB not connected - show BLE with profile number on new line
              * BLE text colors:
@@ -1563,14 +1563,14 @@ void display_update_connection(bool usb_rdy, bool ble_conn, bool ble_bond, int p
              */
             const char *ble_color;
             if (ble_conn) {
-                ble_color = "00ff00";  /* Green - connected */
+                ble_color = "4DD0E1";  /* Cyan - connected */
             } else if (ble_bond) {
-                ble_color = "4A90E2";  /* Blue - bonded but not connected */
+                ble_color = "4FC3F7";  /* Accent blue - bonded but not connected */
             } else {
-                ble_color = "ffffff";  /* White - not bonded */
+                ble_color = "90A4AE";  /* Blue-grey - not bonded */
             }
             snprintf(stbuf_transport, sizeof(stbuf_transport),
-                    "#%s BLE#\n#ffffff %d#", ble_color, profile);
+                    "#%s BLE#\n#ECeff1 %d#", ble_color, profile);
         }
         lv_label_set_text_static(transport_label, stbuf_transport);
     }
@@ -1922,7 +1922,7 @@ static void create_main_screen_widgets(void) {
     lv_obj_set_style_text_align(transport_label, LV_TEXT_ALIGN_RIGHT, 0);
     lv_label_set_recolor(transport_label, true);
     lv_obj_align(transport_label, LV_ALIGN_TOP_RIGHT, -30, 68);
-    lv_label_set_text(transport_label, "#ffffff BLE#\n#ffffff 0#");
+    lv_label_set_text(transport_label, "#ECeff1 BLE#\n#ECeff1 0#");
 
     ble_profile_label = lv_label_create(screen_obj);
     lv_obj_set_style_text_font(ble_profile_label, &lv_font_montserrat_12, 0);
@@ -1977,7 +1977,6 @@ static void create_main_screen_widgets(void) {
         lv_obj_set_style_bg_grad_color(kb_bat_bar[i], lv_color_hex(0x80DEEA), LV_PART_INDICATOR);
         lv_obj_set_style_bg_grad_dir(kb_bat_bar[i], LV_GRAD_DIR_HOR, LV_PART_INDICATOR);
         lv_obj_set_style_radius(kb_bat_bar[i], 2, LV_PART_INDICATOR);
-        lv_obj_set_style_radius(kb_bat_bar[i], 1, LV_PART_INDICATOR);
         lv_obj_set_style_opa(kb_bat_bar[i], 0, LV_PART_MAIN);
         lv_obj_set_style_opa(kb_bat_bar[i], 0, LV_PART_INDICATOR);
 

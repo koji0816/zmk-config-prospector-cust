@@ -201,16 +201,13 @@ static void touch_input_callback(struct input_event *evt, void *user_data) {
                     int16_t raw_dx = current_x - swipe_state.start_x;
                     int16_t raw_dy = current_y - swipe_state.start_y;
 
-                    // COORDINATE TRANSFORM for 90° CW hardware rotation:
-                    // In physical touch space, moving "right" (raw_dx>0) = LVGL "up"
-                    // In physical touch space, moving "down" (raw_dy>0) = LVGL "right"
-                    // Swipe directions are mapped accordingly:
-                    //   Physical UP   (raw_dy<0) → Display/Swipe LEFT
-                    //   Physical DOWN (raw_dy>0) → Display/Swipe RIGHT
-                    //   Physical LEFT  (raw_dx<0) → Display/Swipe DOWN
-                    //   Physical RIGHT (raw_dx>0) → Display/Swipe UP
-                    int16_t dx = -raw_dy;  // physical Y (inverted) → LVGL X swipe
-                    int16_t dy = raw_dx;   // physical X → LVGL Y swipe
+                    // COORDINATE TRANSFORM for 90° CW hardware rotation (fixed inversion):
+                    //   Physical UP   (raw_dy<0) → Display/Swipe RIGHT (dx>0)
+                    //   Physical DOWN (raw_dy>0) → Display/Swipe LEFT (dx<0)
+                    //   Physical LEFT  (raw_dx<0) → Display/Swipe UP (dy<0)
+                    //   Physical RIGHT (raw_dx>0) → Display/Swipe DOWN (dy>0)
+                    int16_t dx = raw_dy;   // physical Y → LVGL X swipe
+                    int16_t dy = -raw_dx;  // physical X (inverted) → LVGL Y swipe
 
                     int16_t abs_dx = (dx < 0) ? -dx : dx;
                     int16_t abs_dy = (dy < 0) ? -dy : dy;
@@ -269,10 +266,10 @@ INPUT_CALLBACK_DEFINE(DEVICE_DT_GET(TOUCH_NODE), touch_input_callback, NULL);
 static void lvgl_input_read(lv_indev_t *indev, lv_indev_data_t *data) {
     ARG_UNUSED(indev);
 
-    // Apply 90° CW rotation transform + X-axis inversion
+    // Apply 90° CW rotation transform (User reported both axes inverted, so applying 180° inversion to previous mapping)
     // raw_x/raw_y are in touch panel native space (before display rotation)
-    int32_t logical_x = 239 - (int32_t)current_y;     // 239 - raw_y → LVGL x
-    int32_t logical_y = (int32_t)current_x;             // raw_x → LVGL y
+    int32_t logical_x = (int32_t)current_y;             // raw_y → LVGL x
+    int32_t logical_y = 239 - (int32_t)current_x;       // 239 - raw_x → LVGL y
 
     // Clamp to 240x240 valid range
     if (logical_x < 0) logical_x = 0;
